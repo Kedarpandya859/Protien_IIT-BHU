@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Figma Make App</title>
+
+    <!-- Robots meta: from site.json.robots.index === false -->
+    <meta name="robots" content="noindex, nofollow" />
+
+    <!-- Description: from site.json.description (empty in config, so omitted) -->
+    <!-- Icons: from site.json.icons.icon (empty in config, so omitted) -->
+    <!-- Open Graph: from site.json.openGraph.image (empty in config, so omitted) -->
+    <!-- Analytics: from site.json.analytics.googleAnalyticsId (empty in config, so omitted) -->
+    <!-- Custom Scripts: all empty in config, so omitted -->
+    <!-- Accessibility: addBypassLinks is false in config, so omitted -->
+
+    <!-- Tailwind CSS v4 - inlined via @import -->
+    <style>
+      @import 'tailwindcss';
+      @tailwind base;
+      @tailwind components;
+      @tailwind utilities;
+
+      /* Custom styles that would be in src/index.css */
+      /* Figma Make app specific styles */
+      body {
+        @apply bg-gray-50 text-gray-900 antialiased;
+      }
+
+      /* Figma bypass link styles (from figmaSiteConfiguration when addBypassLinks: true) */
+      /* Keeping as commented-out reference since config has it false */
+      /*
+      .figma-bypass-link {
+        @apply fixed top-2 left-2 z-[9999] -translate-y-[150px] rounded bg-gray-900/95 px-3 py-1.5 text-xs font-medium text-white transition-transform duration-200;
+      }
+      .figma-bypass-link:focus {
+        @apply translate-y-0;
+      }
+      */
+    </style>
+
+    <!-- React 18/19 from CDN -->
+    <script crossorigin src="https://unpkg.com/react@19/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@19/umd/react-dom.production.min.js"></script>
+
+    <!-- Babel for JSX in browser (development only) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <body>
+    <!-- Figma bypass link (would be active if addBypassLinks: true) -->
+    <!-- <a href="#root" class="figma-bypass-link">Skip to content</a> -->
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+      // Minimal React App component - represents what would be in src/App.tsx
+      const App = () => {
+        return (
+          <div className="min-h-screen flex flex-col items-center justify-center p-6 space-y-4">
+            <header className="text-center">
+              <h1 className="text-3xl font-bold text-gray-900">
+                Figma Make App
+              </h1>
+              <p className="mt-2 text-sm text-gray-600">
+                A React + Vite + Tailwind CSS project running inside Figma Make
+              </p>
+            </header>
+
+            <main className="w-full max-w-xl space-y-6">
+              <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                <h2 className="text-xl font-semibold mb-4">Welcome</h2>
+                <p className="text-gray-700">
+                  This is a self-contained HTML representation of the Figma Make app.
+                  All configuration from vite.config.ts, package.json, and site.json
+                  has been incorporated into this single file for easy sharing and deployment.
+                </p>
+              </div>
+
+              <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl p-6">
+                <h3 className="font-semibold mb-2">Features</h3>
+                <ul className="list-disc list-inside space-y-2 text-sm">
+                  <li>React 19</li>
+                  <li>Vite 8 with plugin ecosystem</li>
+                  <li>Tailwind CSS v4</li>
+                  <li>Figma Make integration</li>
+                  <li>Self-contained HTML distribution</li>
+                </ul>
+              </div>
+            </main>
+
+            <footer className="mt-8 text-center text-xs text-gray-500">
+              Generated from figma-make-app project •
+              <a href="https://github.com/your-username/figma-make-app"
+                 className="text-indigo-600 hover:underline">
+                View on GitHub
+              </a>
+            </footer>
+          </div>
+        );
+      };
+
+      // Render the app - represents what would be in src/main.tsx
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(<App />);
+    </script>
+  </body>
+</html>

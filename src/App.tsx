@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 // ─── Brand Tokens ────────────────────────────────────────────
 const P  = '#9F2089'   // Meesho Purple
@@ -40,6 +40,33 @@ const SPECS: Record<number, Record<string,string>> = {
 
 const fmt = (n: number) => n.toLocaleString('en-IN')
 const disc = (p: number, m: number) => Math.round((1 - p/m)*100)
+
+type VoiceLanguage = 'en-IN' | 'hi-IN'
+
+interface RecognitionResultLike {
+  0: { transcript: string }
+}
+
+interface RecognitionEventLike {
+  results: ArrayLike<RecognitionResultLike>
+}
+
+interface BrowserSpeechRecognition {
+  lang: string
+  interimResults: boolean
+  maxAlternatives: number
+  onresult: ((event: RecognitionEventLike) => void) | null
+  onerror: ((event: { error: string }) => void) | null
+  onend: (() => void) | null
+  start: () => void
+  stop: () => void
+  abort: () => void
+}
+
+type SpeechWindow = Window & {
+  SpeechRecognition?: new () => BrowserSpeechRecognition
+  webkitSpeechRecognition?: new () => BrowserSpeechRecognition
+}
 
 // ─── SVG Icons ───────────────────────────────────────────────
 function IcBack()   { return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg> }
@@ -145,10 +172,11 @@ function RatingBadge({ val }: { val: number }) {
 }
 
 // ─── Screen 1: Product Listing ───────────────────────────────
-function ListingScreen({ compareIds, onToggle, onOpenProduct }: {
+function ListingScreen({ compareIds, onToggle, onOpenProduct, onVoiceAgent }: {
   compareIds: number[]
   onToggle: (p: Product) => void
   onOpenProduct: (id: number) => void
+  onVoiceAgent: () => void
 }) {
   const [search] = useState('caps for men')
 
@@ -173,6 +201,15 @@ function ListingScreen({ compareIds, onToggle, onOpenProduct }: {
             {f} <IcChevD />
           </button>
         ))}
+      </div>
+
+      <div className="mx-3 mt-3 flex items-center gap-3 rounded-2xl px-3 py-2.5" style={{ background: `linear-gradient(110deg, ${PL}, #FFF)`, border: `1px solid ${PB}` }}>
+        <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-white" style={{ backgroundColor: P }}>🎙</div>
+        <div className="min-w-0 flex-1">
+          <p className="m-0 text-xs font-black" style={{ color: DT }}>Shop by speaking</p>
+          <p className="m-0 text-[10px]" style={{ color: ST }}>Ask for a product in English or Hindi</p>
+        </div>
+        <button onClick={onVoiceAgent} className="rounded-xl px-3 py-2 text-xs font-black text-white" style={{ backgroundColor: P }}>Talk now</button>
       </div>
 
       {/* Title bar */}
@@ -1326,6 +1363,215 @@ function SuccessScreen({ onNavigate }: { onNavigate: (s: Screen) => void }) {
   )
 }
 
+function VoiceShoppingAgent({ onClose, onOpenProduct, onCompare }: {
+  onClose: () => void
+  onOpenProduct: (id: number) => void
+  onCompare: () => void
+}) {
+  const [language, setLanguage] = useState<'English' | 'Hindi' | 'Hinglish'>('English')
+  const [listening, setListening] = useState(false)
+  const [speaking, setSpeaking] = useState(false)
+  const [transcript, setTranscript] = useState('')
+  const [reply, setReply] = useState('Namaste! Tell me what you are shopping for, and I’ll help you find it.')
+  const [error, setError] = useState('')
+  const [action, setAction] = useState<{ kind: 'product'; id: number } | { kind: 'compare' } | null>(null)
+  const recognitionRef = useRef<BrowserSpeechRecognition | null>(null)
+
+  useEffect(() => () => {
+    recognitionRef.current?.abort()
+    window.speechSynthesis?.cancel()
+  }, [])
+
+  function speak(text: string) {
+    if (!('speechSynthesis' in window)) {
+      setError('Spoken replies are not available in this browser. You can still read the response here.')
+      return
+    }
+    window.speechSynthesis.cancel()
+    const utterance = new SpeechSynthesisUtterance(text)
+    utterance.lang = language === 'Hindi' ? 'hi-IN' : 'en-IN'
+    utterance.rate = 0.94
+    utterance.onend = () => setSpeaking(false)
+    utterance.onerror = () => {
+      setSpeaking(false)
+      setError('I could not play the spoken reply. Please try again.')
+    }
+    setSpeaking(true)
+    window.speechSynthesis.speak(utterance)
+  }
+
+  function respondTo(text: string) {
+    const normalized = text.toLowerCase()
+    let nextReply: string
+    let nextAction: typeof action = null
+
+    if (/\b(compare|comparison|side by side)\b/.test(normalized) || /तुलना|कम्पेयर/.test(normalized)) {
+      nextAction = { kind: 'compare' }
+      nextReply = language === 'Hindi'
+        ? 'ज़रूर! मैंने तुलना के लिए दो लोकप्रिय कैप चुने हैं। तुलना देखने के लिए नीचे टैप करें।'
+        : language === 'Hinglish'
+          ? 'Bilkul! Maine compare karne ke liye do popular caps choose kiye hain. Comparison dekhne ke liye neeche tap karein.'
+          : 'Sure! I picked two popular caps to compare. Tap below to see them side by side.'
+    } else {
+      const product = /lamp|light|study|लैम्प|लाइट/.test(normalized)
+        ? PRODUCTS.find(item => item.id === 7)!
+        : /sport|run|gym|puma|स्पोर्ट|रन/.test(normalized)
+          ? PRODUCTS.find(item => item.id === 3)!
+          : /cheap|cheapest|budget|under 300|कम कीमत|सस्ता/.test(normalized)
+            ? PRODUCTS.find(item => item.id === 2)!
+            : PRODUCTS.find(item => item.id === 1)!
+      nextAction = { kind: 'product', id: product.id }
+      nextReply = language === 'Hindi'
+        ? `मुझे आपके लिए ${product.short} मिला है, जिसकी कीमत ₹${product.price} है और रेटिंग ${product.rating} स्टार है। क्या आप इसकी जानकारी देखना चाहेंगे?`
+        : language === 'Hinglish'
+          ? `Aapke liye ${product.short} mila hai, ₹${product.price} mein, rating ${product.rating} stars. Kya aap details dekhna chahenge?`
+          : `I found the ${product.short} for ₹${product.price}, rated ${product.rating} stars. Would you like to see its details?`
+    }
+
+    setTranscript(text)
+    setReply(nextReply)
+    setAction(nextAction)
+    setError('')
+    speak(nextReply)
+  }
+
+  function startListening() {
+    if (listening) {
+      recognitionRef.current?.stop()
+      return
+    }
+    const speechWindow = window as SpeechWindow
+    const Recognition = speechWindow.SpeechRecognition ?? speechWindow.webkitSpeechRecognition
+    if (!Recognition) {
+      setError('Voice input is not supported in this browser. Try the sample requests below or use Chrome or Edge.')
+      return
+    }
+    window.speechSynthesis?.cancel()
+    setSpeaking(false)
+    setError('')
+    setTranscript('')
+    const recognition = new Recognition()
+    recognition.lang = language === 'English' ? 'en-IN' : 'hi-IN'
+    recognition.interimResults = false
+    recognition.maxAlternatives = 1
+    recognition.onresult = event => {
+      const text = event.results[0]?.[0]?.transcript?.trim()
+      if (text) respondTo(text)
+    }
+    recognition.onerror = event => {
+      setListening(false)
+      const errors: Record<string, string> = {
+        'not-allowed': 'Microphone access is blocked. Allow microphone access in your browser settings and try again.',
+        'no-speech': 'I did not hear anything. Please try speaking again.',
+        'audio-capture': 'No microphone was found. Connect a microphone and try again.',
+        network: 'Voice recognition could not connect. Check your internet connection and try again.',
+      }
+      setError(errors[event.error] ?? `Voice recognition failed (${event.error}). Please try again.`)
+    }
+    recognition.onend = () => setListening(false)
+    recognitionRef.current = recognition
+    try {
+      recognition.start()
+      setListening(true)
+    } catch {
+      setListening(false)
+      setError('Could not start the microphone. Check that it is available and try again.')
+    }
+  }
+
+  function trySample(text: string) {
+    window.speechSynthesis?.cancel()
+    setSpeaking(false)
+    respondTo(text)
+  }
+
+  return (
+    <div className="absolute inset-0 z-[80] flex items-end" style={{ backgroundColor: 'rgba(20,12,20,0.62)' }} onClick={onClose}>
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="voice-agent-title"
+        className="slide-up flex max-h-[94%] w-full flex-col overflow-hidden rounded-t-[28px] bg-white"
+        onClick={event => event.stopPropagation()}
+      >
+        <div className="flex items-center justify-between px-5 pb-3 pt-5" style={{ borderBottom: '1px solid #F0E8EF' }}>
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-full text-xl text-white" style={{ backgroundColor: P }}>✦</div>
+            <div>
+              <h2 id="voice-agent-title" className="m-0 text-base font-black" style={{ color: DT }}>Meesho Voice Assistant</h2>
+              <p className="m-0 text-xs" style={{ color: ST }}>Speak naturally · English, Hindi or Hinglish</p>
+            </div>
+          </div>
+          <button onClick={onClose} aria-label="Close voice assistant" className="flex h-9 w-9 items-center justify-center rounded-full text-lg" style={{ backgroundColor: '#F6F3F5', color: DT }}>×</button>
+        </div>
+
+        <div className="scrollbar-hide flex-1 overflow-y-auto px-5 py-4">
+          <label className="mb-2 block text-xs font-bold" style={{ color: ST }} htmlFor="voice-language">RESPONSE LANGUAGE</label>
+          <select
+            id="voice-language"
+            value={language}
+            onChange={event => setLanguage(event.target.value as typeof language)}
+            className="mb-4 w-full rounded-xl border px-3 py-2.5 text-sm font-bold outline-none"
+            style={{ borderColor: PB, color: DT, backgroundColor: 'white' }}
+          >
+            <option>English</option>
+            <option>Hindi</option>
+            <option>Hinglish</option>
+          </select>
+
+          <div className="rounded-2xl p-4" style={{ backgroundColor: PL }}>
+            <div className="mb-2 flex items-center gap-2 text-xs font-black" style={{ color: P }}>
+              <IcSparkle /> {speaking ? 'SPEAKING' : 'ASSISTANT'}
+              {speaking && <span className="flex items-end gap-1" aria-hidden="true"><span className="voice-bar" /><span className="voice-bar" /><span className="voice-bar" /></span>}
+            </div>
+            <p className="m-0 text-sm font-semibold leading-relaxed" style={{ color: DT }}>{reply}</p>
+            {action && (
+              <button
+                className="mt-3 w-full rounded-xl py-2.5 text-sm font-black text-white"
+                style={{ backgroundColor: P }}
+                onClick={() => action.kind === 'compare' ? onCompare() : onOpenProduct(action.id)}
+              >
+                {action.kind === 'compare' ? 'Compare these products' : 'View product details'}
+              </button>
+            )}
+          </div>
+
+          {transcript && (
+            <div className="mt-3 rounded-xl border px-3 py-2.5" style={{ borderColor: '#EEE', color: ST }}>
+              <p className="m-0 text-[10px] font-black tracking-wide">I HEARD</p>
+              <p className="mb-0 mt-1 text-sm font-semibold" style={{ color: DT }}>{transcript}</p>
+            </div>
+          )}
+
+          {error && <p role="alert" className="mt-3 rounded-xl px-3 py-2.5 text-xs font-semibold" style={{ color: '#9B1C31', backgroundColor: '#FFF0F1' }}>{error}</p>}
+
+          <p className="mb-2 mt-5 text-xs font-black" style={{ color: ST }}>TRY ASKING</p>
+          <div className="flex flex-wrap gap-2">
+            {['Find a sports cap', 'What is the cheapest cap?', 'Compare caps'].map(sample => (
+              <button key={sample} onClick={() => trySample(sample)} className="rounded-full border px-3 py-2 text-xs font-bold" style={{ color: P, borderColor: PB, backgroundColor: 'white' }}>{sample}</button>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 px-5 pb-5 pt-3" style={{ borderTop: '1px solid #F0E8EF' }}>
+          {speaking && (
+            <button onClick={() => { window.speechSynthesis.cancel(); setSpeaking(false) }} className="rounded-xl border px-3 py-3 text-xs font-bold" style={{ borderColor: PB, color: P }}>Stop reply</button>
+          )}
+          <button
+            onClick={startListening}
+            aria-label={listening ? 'Stop listening' : 'Start speaking'}
+            className="flex flex-1 items-center justify-center gap-2 rounded-2xl py-3.5 text-sm font-black text-white"
+            style={{ backgroundColor: listening ? '#C62828' : P }}
+          >
+            <span className="text-lg">{listening ? '■' : '🎙'}</span>
+            {listening ? 'Listening… tap to stop' : 'Tap to speak'}
+          </button>
+        </div>
+      </section>
+    </div>
+  )
+}
+
 // ─── Main App ─────────────────────────────────────────────────
 export default function App() {
   const [screen, setScreen]       = useState<Screen>('listing')
@@ -1335,6 +1581,7 @@ export default function App() {
   const [themeId, setThemeId]     = useState('comfort')
   const [toast, setToast]         = useState('')
   const [activeNav, setActiveNav] = useState('home')
+  const [voiceAgentOpen, setVoiceAgentOpen] = useState(false)
 
   function nav(s: Screen) {
     setHistory(h => [...h, screen])
@@ -1393,8 +1640,13 @@ export default function App() {
           <div className="flex-1 flex flex-col overflow-hidden" style={{ position: 'relative' }}>
             <div className="flex-1 overflow-y-auto scrollbar-hide" style={{ position: 'relative' }}>
               {screen === 'listing' && (
-                <ListingScreen compareIds={compareIds} onToggle={toggleCompare} onOpenProduct={openProduct} />
-              )}
+              <ListingScreen
+                compareIds={compareIds}
+                onToggle={toggleCompare}
+                onOpenProduct={openProduct}
+                onVoiceAgent={() => setVoiceAgentOpen(true)}
+              />
+            )}
               {screen === 'compare' && (
                 <CompareScreen compareIds={compareIds} onBack={goBack} onNavigate={nav} />
               )}
@@ -1431,6 +1683,21 @@ export default function App() {
             )}
           </div>
 
+          {voiceAgentOpen && (
+            <VoiceShoppingAgent
+              onClose={() => setVoiceAgentOpen(false)}
+              onOpenProduct={id => {
+                setVoiceAgentOpen(false)
+                openProduct(id)
+              }}
+              onCompare={() => {
+                setVoiceAgentOpen(false)
+                setCompareIds([1, 3])
+                nav('compare')
+              }}
+            />
+          )}
+
           {/* Toast */}
           {toast && (
             <div className="absolute bottom-24 left-4 right-4 z-[100] fade-in">
@@ -1453,6 +1720,7 @@ export default function App() {
           {[
             { label: 'Flow 1: Compare', steps: ['Product Listing', '→ Tap "+ Compare" on 2+ products', '→ Tap "Compare Now"', '→ Compare Table', '→ Add to Cart'] },
             { label: 'Flow 2: AI Reviews', steps: ['Tap any product card', '→ Product Detail Page', '→ Tap "Summarize Reviews"', '→ Read or listen to the AI summary', '→ Tap a theme (e.g. Comfort)'] },
+            { label: 'Flow 3: Voice Shopping', steps: ['Tap "Talk now" on the listing', '→ Allow microphone access', '→ Ask for a product in English or Hindi', '→ Hear a spoken recommendation', '→ Open details or compare products'] },
           ].map(flow => (
             <div key={flow.label} className="rounded-2xl p-4" style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}>
               <p className="font-black text-sm text-white mb-2">{flow.label}</p>
@@ -1467,6 +1735,7 @@ export default function App() {
               <p>✓ Side-by-side comparison table</p>
               <p>✓ AI review summary (EN + HI)</p>
               <p>✓ Spoken AI summary</p>
+              <p>✓ Voice shopping demo (Web Speech API)</p>
               <p>✓ Language selector sheet</p>
               <p>✓ Review theme detail</p>
               <p>✓ Max 4 products toast</p>

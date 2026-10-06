@@ -1,14 +1,14 @@
 # Meesho Wireframe Prototype
 
-This repo contains a single-page React + Vite prototype implementing the Meesho-style mobile shopping wireframes and interactive product flows.
+This repository brings the three supplied interactive Meesho prototype projects into one React + Vite repo. Its multi-page build keeps each flow's design and interactions isolated while making the prototype set available from one development server.
 
-## Included
+## Included flows
 
-- Meesho-inspired mobile shopping interface
-- Product listing and comparison screens
-- Detail/review/AI recommendation flows
-- Browser-based voice shopping assistant with speech input and spoken replies
-- Interactive elements for the wireframe prototype
+- [Meesho shopping, comparison, and review flows](./src/App.tsx) — product listings, comparisons, product details, review summaries, review themes, and the browser voice assistant.
+- [Agentic voice shopping journey](./prototypes/voice-shopping/src/App.tsx) — 12 interactive mobile frames, from voice request through search, review intelligence, comparison, cart, checkout, approval, and order tracking.
+- [Personalized onboarding journey](./prototypes/onboarding/src/App.tsx) — splash, gender, age, interests, and personalized shopping home.
+
+Open the main listing and use **Explore the wireframes** to launch the voice-shopping or onboarding flows.
 
 ## Voice assistant
 
@@ -23,10 +23,18 @@ npm install
 npm run dev
 ```
 
-## Build
+## Additional prototype routes
+
+With the development server running, open:
+
+- `http://localhost:8443/prototypes/voice-shopping/`
+- `http://localhost:8443/prototypes/onboarding/`
+
+## Build and type-check
 
 ```bash
 npm run build
+npx tsc --noEmit
 ```
 
 ## Notes

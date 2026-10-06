@@ -212,6 +212,18 @@ function ListingScreen({ compareIds, onToggle, onOpenProduct, onVoiceAgent }: {
         <button onClick={onVoiceAgent} className="rounded-xl px-3 py-2 text-xs font-black text-white" style={{ backgroundColor: P }}>Talk now</button>
       </div>
 
+      <section className="mx-3 mt-3 rounded-2xl bg-white p-3" style={{ border: '1px solid #EEE' }}>
+        <p className="mb-2 text-xs font-black" style={{ color: DT }}>Explore the wireframes</p>
+        <div className="grid grid-cols-2 gap-2">
+          <a href="/prototypes/voice-shopping/index.html" className="rounded-xl p-2.5 text-[11px] font-bold no-underline" style={{ color: P, backgroundColor: PL }}>
+            Agentic voice shopping <span className="block text-[9px] font-medium" style={{ color: ST }}>12-screen journey →</span>
+          </a>
+          <a href="/prototypes/onboarding/index.html" className="rounded-xl p-2.5 text-[11px] font-bold no-underline" style={{ color: P, backgroundColor: PL }}>
+            Personalized onboarding <span className="block text-[9px] font-medium" style={{ color: ST }}>Setup + shopping home →</span>
+          </a>
+        </div>
+      </section>
+
       {/* Title bar */}
       <div className="bg-white px-3 py-2" style={{ borderBottom: `1px solid #EEE` }}>
         <div className="flex items-center justify-between">

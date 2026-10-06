@@ -16,6 +16,13 @@ export default defineConfig(({ mode }) => {
     build: {
       sourcemap: emitSourcemaps ? 'inline' : false,
       minify: !emitSourcemaps,
+      rollupOptions: {
+        input: {
+          main: path.resolve(__dirname, 'index.html'),
+          voiceShopping: path.resolve(__dirname, 'prototypes/voice-shopping/index.html'),
+          onboarding: path.resolve(__dirname, 'prototypes/onboarding/index.html'),
+        },
+      },
     },
     plugins: [
 react(),

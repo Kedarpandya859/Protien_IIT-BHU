@@ -3,33 +3,7 @@
   "services": {
     "app": {
       "root": ".",
-      "framework": "vite",
-      "bindings": [
-        {
-          "type": "service",
-          "service": "agentic",
-          "format": "url",
-          "env": "AGENTIC_SERVICE_URL"
-        },
-        {
-          "type": "service",
-          "service": "microdrama",
-          "format": "url",
-          "env": "MICRODRAMA_SERVICE_URL"
-        },
-        {
-          "type": "service",
-          "service": "personalisedonboarding",
-          "format": "url",
-          "env": "PERSONALISED_ONBOARDING_URL"
-        },
-        {
-          "type": "service",
-          "service": "summarizer_compare_bundling",
-          "format": "url",
-          "env": "SUMMARIZER_COMPARE_BUNDLING_URL"
-        }
-      ]
+      "framework": "vite"
     },
     "agentic": {
       "root": "agentic",
@@ -49,6 +23,54 @@
     }
   },
   "rewrites": [
+    {
+      "source": "/agentic/(.*)",
+      "destination": {
+        "service": "agentic"
+      }
+    },
+    {
+      "source": "/agentic",
+      "destination": {
+        "service": "agentic"
+      }
+    },
+    {
+      "source": "/microdrama/(.*)",
+      "destination": {
+        "service": "microdrama"
+      }
+    },
+    {
+      "source": "/microdrama",
+      "destination": {
+        "service": "microdrama"
+      }
+    },
+    {
+      "source": "/onboarding/(.*)",
+      "destination": {
+        "service": "personalisedonboarding"
+      }
+    },
+    {
+      "source": "/onboarding",
+      "destination": {
+        "service": "personalisedonboarding"
+      }
+    },
+    {
+      "source": "/summarizer/(.*)",
+      "destination": {
+        "service": "summarizer_compare_bundling"
+      }
+    },
+    {
+      "source": "/summarizer",
+      "destination": {
+        "service": "summarizer_compare_bundling"
+      }
+    },
     {
       "source": "/(.*)",
       "destination": {

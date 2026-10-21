@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Meesho - MiniDrama & Customizable Prints</title>
+<meta name="description" content="Watch short stories, discover products naturally, and customize prints - all inside Meesho." />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+:root {
+  --brand: #9f2089;
+  --brand-dark: #751664;
+  --brand-soft: #fff0fb;
+  --brand-pale: #fbe7f7;
+  --ink: #24212a;
+  --muted: #6f6a73;
+  --line: #e8e3e8;
+  --surface: #ffffff;
+  --canvas: #f7f5f7;
+  --green: #16844b;
+  --orange: #e26b2d;
+  --star: #13864b;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --shadow: 0 8px 28px rgba(59, 23, 53, 0.1);
+}
+* { box-sizing: border-box; }
+html { background: #eee9ed; }
+body { margin: 0; color: var(--ink); font-family: "Inter", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+button { font: inherit; }
+.app-stage { min-height: 100vh; display: flex; justify-content: center; background: radial-gradient(circle at 50% 0, #fff 0, #efe9ee 54%, #e6dfe4 100%); }
+.phone-shell { position: relative; width: 100%; max-width: 430px; min-height: 100vh; background: var(--surface); overflow: hidden; box-shadow: 0 0 60px rgba(57, 23, 51, .13); }
+.screen-content { flex: 1; height: 100%; overflow-y: auto; overflow-x: hidden; padding-bottom: 84px; background: var(--surface); color: var(--ink); scrollbar-width: thin; position: relative; box-sizing: border-box; }
+.button { border: 0; border-radius: var(--radius-sm); min-height: 46px; padding: 0 18px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; cursor: pointer; transition: transform .18s ease, background .18s ease; }
+.button:active { transform: scale(.98); }
+.button:disabled { opacity: .4; cursor: default; }
+.button-primary { color: white; background: var(--brand); }
+.button-outline { color: var(--brand); background: white; border: 1.5px solid var(--brand); }
+.button-soft { color: var(--brand); background: var(--brand-soft); border: 1.5px solid var(--brand); }
+.button-ghost { min-height: auto; color: inherit; background: transparent; padding: 0; }
+.button-dark { color: white; background: rgba(26, 22, 27, .74); }
+.wide { width: 100%; }
+.compact { min-height: 39px; padding: 0 14px; font-size: 12px; }
+.icon-button { width: 40px; height: 40px; border-radius: 50%; }
+.app-header { height: 62px; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; background: var(--surface); }
+.header-left, .header-actions { display: flex; align-items: center; gap: 17px; }
+.header-title { font-size: 19px; font-weight: 700; }
+.logo { color: var(--brand); font-size: 27px; font-weight: 800; letter-spacing: -1.6px; }
+.home-head { padding-bottom: 4px; border-bottom: 1px solid var(--line); }
+.searchbar { height: 45px; margin: 0 16px 10px; padding: 0 13px; border: 1px solid #bbb7bc; border-radius: 9px; display: flex; align-items: center; gap: 10px; color: #8a858d; font-size: 13px; }
+.searchbar > span:nth-child(2) { flex: 1; }
+.search-camera { color: var(--brand); font-size: 19px; }
+.location-row { display: flex; align-items: center; gap: 9px; margin: 0 16px; padding: 10px 0; font-size: 11px; }
+.location-row svg { color: var(--brand); }
+.location-row div { display: flex; flex-direction: column; flex: 1; gap: 2px; }
+.location-row strong { font-size: 12px; }
+.chevron { font-size: 24px; color: var(--muted); }
+.category-strip, .chips { overflow-x: auto; scrollbar-width: none; display: flex; }
+.category-strip::-webkit-scrollbar, .chips::-webkit-scrollbar { display: none; }
+.category-strip { gap: 18px; padding: 14px 16px 17px; }
+.category { min-width: 57px; display: flex; flex-direction: column; align-items: center; gap: 7px; font-size: 10px; font-weight: 600; white-space: nowrap; cursor: pointer; }
+.category-icon { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; background: var(--brand-pale); color: var(--brand); font-size: 22px; }
+.categories-page { background: var(--canvas); }
+.categories-page .searchbar { background: white; }
+.custom-category-hero { position: relative; min-height: 194px; margin: 8px 16px 18px; padding: 20px; border-radius: var(--radius-lg); overflow: hidden; display: flex; color: white; background: linear-gradient(125deg, #781465 0%, #b72b9e 65%, #d94abd 100%); box-shadow: 0 10px 28px rgba(117, 22, 100, .24); cursor: pointer; }
+.custom-hero-copy { position: relative; z-index: 2; width: 62%; }
+.custom-new { font-size: 8px; font-weight: 800; letter-spacing: 1px; color: #ffd2f7; }
+.custom-hero-title { margin: 7px 0 5px; font-size: 24px; line-height: 1.05; font-weight: 800; letter-spacing: -.6px; }
+.custom-hero-copy p { margin: 0 0 14px; font-size: 10px; line-height: 1.45; opacity: .88; }
+.custom-hero-copy .button { min-height: 36px; padding: 0 12px; color: var(--brand); background: white; font-size: 10px; }
+.hero-merch { position: absolute; right: 8px; bottom: 0; width: 145px; height: 165px; }
+.mini-shirt { position: absolute; right: 32px; bottom: -13px; width: 88px; height: 118px; border-radius: 20px 20px 9px 9px; display: grid; place-items: center; color: var(--brand); background: white; transform: rotate(7deg); box-shadow: 0 10px 24px rgba(48, 6, 39, .25); }
+.mini-shirt::before, .mini-shirt::after { content: ""; position: absolute; top: 9px; width: 38px; height: 45px; background: white; }
+.mini-shirt::before { left: -21px; transform: rotate(28deg); border-radius: 8px 0 0 8px; }
+.mini-shirt::after { right: -21px; transform: rotate(-28deg); border-radius: 0 8px 8px 0; }
+.mini-shirt span { position: relative; z-index: 2; padding: 7px; border: 2px solid var(--brand-pale); font-size: 10px; font-weight: 800; }
+.mini-mug { position: absolute; right: 4px; top: 15px; width: 54px; height: 60px; border-radius: 7px 7px 16px 16px; display: grid; place-items: center; color: var(--brand); background: #ffd8f5; transform: rotate(-8deg); font-size: 17px; }
+.mini-mug::after { content: ""; position: absolute; right: -17px; top: 11px; width: 19px; height: 28px; border: 6px solid #ffd8f5; border-left: 0; border-radius: 0 15px 15px 0; }
+.category-page-section { margin-top: 8px; padding: 17px 16px; background: white; }
+.category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px 10px; margin-top: 17px; }
+.category-grid-item { display: flex; flex-direction: column; align-items: center; gap: 7px; text-align: center; font-size: 9px; font-weight: 600; color: var(--ink); }
+.category-mark { width: 57px; height: 57px; border-radius: 50%; display: grid; place-items: center; color: #5d4658; font-size: 12px; font-weight: 800; }
+.category-tone-1 { background: #fbe7f7; }.category-tone-2 { background: #e9f3ff; }.category-tone-3 { background: #fff2dc; }.category-tone-4 { background: #f7eaff; }
+.category-tone-5 { background: #e6f7f0; }.category-tone-6 { background: #f3ece7; }.category-tone-7 { background: #fff0e9; }.category-tone-8 { background: #f9f1d9; }
+.personalize-strip { margin: 12px 16px; padding: 13px; border: 1px solid #efd7eb; border-radius: 12px; display: flex; align-items: center; gap: 11px; background: white; cursor: pointer; color: var(--ink); }
+.personalize-icon { width: 43px; height: 43px; border-radius: 11px; display: grid; place-items: center; color: var(--brand); background: var(--brand-soft); }
+.personalize-strip > div:nth-child(2) { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.personalize-strip strong { font-size: 12px; color: var(--ink); }
+.personalize-strip span { color: var(--muted); font-size: 9px; }
+.personalize-strip > b { color: var(--brand); font-size: 21px; }
+.custom-product-row { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
+.custom-mini-product { min-width: 118px; display: flex; flex-direction: column; gap: 4px; font-size: 9px; color: var(--ink); }
+.custom-mini-product > strong { margin-top: 3px; font-size: 11px; color: var(--ink); }
+.custom-mini-product > span { font-size: 13px; font-weight: 800; color: var(--ink); }
+.custom-mini-product > small { color: var(--green); }
+.mini-merch { height: 114px; border-radius: 11px; display: grid; place-items: center; color: var(--brand); background: #f5f2f4; font-size: 17px; font-weight: 800; }
+.product-mini-mug { background: #f7d8f1; }
+.product-mini-pillow { margin: 10px; border-radius: 22px 15px 23px 17px; background: #eee6ec; box-shadow: inset 0 0 0 6px white, 0 3px 8px rgba(0,0,0,.1); }
+.sale-banner { margin: 0 16px 18px; min-height: 126px; border-radius: var(--radius-md); padding: 20px; overflow: hidden; display: flex; align-items: center; justify-content: space-between; color: white; background: linear-gradient(120deg, #751664, #bd329f); }
+.sale-kicker { font-size: 9px; letter-spacing: 1.2px; font-weight: 700; opacity: .86; }
+.sale-title { margin: 5px 0 8px; font-size: 22px; line-height: 1.05; font-weight: 800; }
+.sale-note { font-size: 10px; opacity: .86; }
+.sale-badge { width: 80px; height: 80px; border-radius: 50%; background: #ffcc48; color: #58164d; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 25px; font-weight: 800; transform: rotate(7deg); box-shadow: 0 8px 24px rgba(38, 8, 31, .25); }
+.sale-badge small { font-size: 12px; }
+.mini-section { padding: 20px 16px 22px; background: linear-gradient(180deg, #fff5fc 0%, white 100%); border-block: 1px solid var(--brand-pale); }
+.mini-heading { display: flex; align-items: center; gap: 10px; }
+.clapper { width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; color: white; background: var(--brand); transform: rotate(-4deg); }
+.eyebrow { color: var(--brand); font-size: 9px; letter-spacing: 1.2px; font-weight: 800; }
+.eyebrow.light { color: #f1b1e6; }
+.section-title { font-size: 18px; font-weight: 750; letter-spacing: -.25px; }
+.section-sub, .muted { color: var(--muted); font-size: 12px; }
+.mini-section > .section-sub { margin: 8px 0 15px 48px; }
+.home-dramas { display: flex; gap: 11px; overflow-x: auto; margin: 0 -16px 17px; padding: 0 16px; scrollbar-width: none; }
+.home-dramas::-webkit-scrollbar { display: none; }
+.home-drama-card { min-width: 208px; overflow: hidden; background: white; border: 1px solid var(--line); border-radius: var(--radius-md); box-shadow: 0 5px 18px rgba(58, 23, 52, .07); cursor: pointer; }
+.poster-wrap { position: relative; height: 118px; }
+.poster { width: 100%; height: 100%; display: block; object-fit: cover; }
+.duration { position: absolute; right: 7px; bottom: 7px; padding: 4px 7px; color: white; background: rgba(20, 17, 21, .72); border-radius: 6px; font-size: 9px; }
+.home-drama-info { padding: 10px 11px 12px; display: grid; grid-template-columns: 1fr auto; gap: 3px 8px; }
+.home-drama-info strong { font-size: 14px; }
+.home-drama-info > span:not(.text-cta) { color: #6f6a73; font-size: 10px; font-weight: 600; }
+.home-drama-info p { grid-column: 1 / -1; margin: 3px 0 6px; color: #5d5861; font-size: 10px; line-height: 1.35; }
+.text-cta { color: var(--brand); font-size: 12px; font-weight: 700; cursor: pointer; }
+.shopping-section, .feed-section { padding: 20px 16px; color: var(--ink); }
+.section-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 13px; color: var(--ink); }
+.product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.product-tile { display: flex; flex-direction: column; gap: 5px; font-size: 11px; color: var(--ink); }
+.product-tile span { color: #2b252c; font-size: 13px; font-weight: 600; line-height: 1.35; }
+.product-tile img { width: 100%; aspect-ratio: 1; object-fit: cover; border: 1px solid var(--line); border-radius: 9px; }
+.product-tile strong { font-size: 15px; color: #150f14; font-weight: 800; }
+.product-tile small { width: fit-content; padding: 3px 6px; border-radius: 4px; color: var(--green); background: #e8f7ee; font-weight: 700; }
+.bottom-nav { position: absolute; z-index: 30; bottom: 0; left: 0; right: 0; width: 100%; height: 68px; padding: 6px 8px max(6px, env(safe-area-inset-bottom)); background: rgba(255, 255, 255, .98); border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(5, 1fr); backdrop-filter: blur(12px); box-sizing: border-box; }
+.nav-item { min-width: 0; display: flex; flex-direction: column; gap: 4px; color: var(--muted); font-size: 9px; font-weight: 500; align-items: center; justify-content: center; cursor: pointer; border: 0; background: none; }
+.nav-item.active { color: var(--brand); font-weight: 700; }
+.nav-play { width: 28px; height: 24px; border-radius: 8px; display: grid; place-items: center; background: var(--brand-soft); }
+.nav-item.active .nav-play { color: white; background: var(--brand); }
+.discover-intro { padding: 12px 16px 15px; }
+.display-title { margin-bottom: 8px; color: #3a2436; font-size: 29px; line-height: 1.1; font-weight: 800; letter-spacing: -1px; }
+.chips { gap: 8px; padding: 0 16px 16px; }
+.chip { white-space: nowrap; padding: 9px 13px; border: 1px solid var(--line); border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; }
+.chip.selected { color: white; background: var(--brand); border-color: var(--brand); }
+.continue-card { position: relative; height: 165px; margin: 0 16px 9px; border-radius: var(--radius-md); overflow: hidden; color: white; background: #39102f; cursor: pointer; }
+.continue-card > .poster { opacity: .48; }
+.continue-card::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(38, 10, 32, .95), rgba(38, 10, 32, .16)); }
+.continue-info { position: absolute; z-index: 2; left: 16px; top: 18px; width: 57%; display: flex; flex-direction: column; gap: 5px; font-size: 10px; }
+.continue-info strong { font-size: 20px; }
+.continue-link { margin-top: 5px; font-size: 11px; font-weight: 700; }
+.progress { height: 3px; background: rgba(255,255,255,.3); border-radius: 3px; overflow: hidden; }
+.progress i { display: block; width: 62%; height: 100%; background: #ed63d5; }
+.round-play { position: absolute; z-index: 2; right: 25px; top: 56px; width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; color: var(--brand); background: white; }
+.drama-feed { display: flex; flex-direction: column; gap: 17px; }
+.feed-card { display: grid; grid-template-columns: 122px 1fr; gap: 13px; min-height: 160px; }
+.feed-poster { position: relative; border-radius: 13px; overflow: hidden; cursor: pointer; }
+.rank { position: absolute; left: 7px; top: 6px; color: white; font-size: 18px; font-weight: 800; text-shadow: 0 2px 5px rgba(0,0,0,.5); }
+.feed-info { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 5px 0; }
+.feed-info .genre { color: var(--brand); font-size: 9px; text-transform: uppercase; font-weight: 800; letter-spacing: .7px; }
+.feed-info strong { font-size: 17px; }
+.feed-info > span:not(.genre) { color: var(--muted); font-size: 10px; }
+.feed-info p { margin: 2px 0 7px; color: var(--muted); font-size: 11px; line-height: 1.35; }
+.detail-screen { padding-bottom: 72px; }
+.series-hero { position: relative; height: 435px; color: white; background: #2d1229; }
+.series-hero > .poster { position: absolute; inset: 0; }
+.hero-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(23, 9, 20, .22), rgba(26, 9, 22, .15) 35%, rgba(26, 9, 22, .96)); }
+.series-hero .app-header { position: relative; z-index: 2; color: white; background: transparent; }
+.glass { color: white; background: rgba(20, 14, 19, .42); backdrop-filter: blur(5px); }
+.hero-copy { position: absolute; z-index: 2; bottom: 24px; left: 18px; right: 18px; }
+.pill-light { display: inline-block; padding: 5px 9px; margin-bottom: 10px; border-radius: 12px; background: rgba(255,255,255,.18); font-size: 9px; font-weight: 700; }
+.hero-title { font-size: 32px; line-height: 1.1; font-weight: 800; letter-spacing: -.8px; }
+.hero-copy p { max-width: 370px; margin: 8px 0 0; font-size: 12px; line-height: 1.5; opacity: .89; }
+.series-body { padding: 16px; }
+.meta-row { display: flex; align-items: center; gap: 9px; margin-bottom: 15px; color: var(--muted); font-size: 11px; }
+.meta-row > span { padding-right: 9px; border-right: 1px solid var(--line); }
+.meta-row > span:last-child { border: 0; }
+.meta-row .rating { padding: 5px 8px; border: 0; border-radius: 6px; color: white; background: var(--star); font-weight: 700; }
+.series-body > .button { margin-bottom: 9px; }
+.episode-title-row { margin-top: 18px; }
+.season-pill { padding: 7px 9px; border: 1px solid var(--line); border-radius: 8px; font-size: 10px; }
+.episode-list { display: flex; flex-direction: column; }
+.episode-row { display: grid; grid-template-columns: 89px 1fr auto; align-items: center; gap: 11px; padding: 13px 0; border-top: 1px solid var(--line); }
+.episode-thumb { position: relative; height: 64px; overflow: hidden; border-radius: 8px; }
+.episode-thumb span { position: absolute; inset: 0; margin: auto; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; color: white; background: rgba(30,20,28,.65); }
+.episode-info { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.episode-info > span { color: var(--brand); font-size: 8px; font-weight: 700; }
+.episode-info strong { font-size: 12px; }
+.episode-info p, .episode-info small { margin: 0; color: var(--muted); font-size: 9px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.watch-button { min-height: 32px; padding: 0 10px; font-size: 9px; }
+.story-screen { position: relative; min-height: 100vh; overflow: hidden; color: white; background: #1e171c; }
+.story-bg, .story-video, .story-overlay { position: absolute; inset: 0; height: 100vh; }
+.story-bg { object-position: center; }
+.story-video { width: 100%; object-fit: cover; background: #1e171c; }
+.story-overlay { background: linear-gradient(180deg, rgba(20,10,18,.56) 0, transparent 28%, transparent 47%, rgba(18,8,16,.82) 75%, rgba(18,8,16,.98)); }
+.story-top { position: relative; z-index: 2; padding: 10px 12px; }
+.story-progress { display: flex; gap: 4px; }
+.story-progress i { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,.33); }
+.story-progress i.filled { background: white; }
+.story-header { margin-top: 10px; display: flex; align-items: center; gap: 11px; }
+.story-header > div:nth-child(2) { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.story-header strong { font-size: 13px; }
+.story-header span { font-size: 9px; opacity: .76; }
+.play-control { position: absolute; z-index: 3; top: 37%; left: calc(50% - 29px); width: 58px; height: 58px; border-radius: 50%; color: white; background: rgba(38, 21, 34, .5); backdrop-filter: blur(5px); display: grid; place-items: center; border: 0; cursor: pointer; }
+.play-control.is-playing { opacity: .25; }
+.dialogue { position: absolute; z-index: 2; left: 18px; right: 18px; bottom: 248px; display: flex; flex-direction: column; gap: 5px; text-shadow: 0 2px 6px rgba(0,0,0,.6); }
+.dialogue span { font-size: 9px; text-transform: uppercase; letter-spacing: .7px; opacity: .8; }
+.dialogue div { font-size: 20px; line-height: 1.3; font-weight: 750; }
+.dialogue strong { font-size: 11px; color: #efc8e8; }
+.story-bottom { position: absolute; z-index: 3; left: 12px; right: 12px; bottom: 16px; }
+.story-product { min-height: 105px; padding: 10px; border-radius: 14px; display: grid; grid-template-columns: 74px 1fr; gap: 10px; color: var(--ink); background: rgba(255,255,255,.97); box-shadow: var(--shadow); cursor: pointer; }
+.story-product img { width: 74px; height: 82px; border-radius: 9px; object-fit: cover; background: #f4f4f4; }
+.story-product-copy { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.story-product-copy > span { color: var(--brand); font-size: 8px; font-weight: 800; letter-spacing: .7px; }
+.story-product-copy > strong { font-size: 13px; }
+.story-product-copy div { display: flex; flex-direction: column; gap: 2px; }
+.story-product-copy b { font-size: 17px; }
+.story-product-copy small { color: var(--green); font-size: 9px; }
+.product-arrow { position: absolute; right: 20px; bottom: 77px; min-height: 31px; padding: 0 10px; font-size: 9px; }
+.story-actions { display: grid; grid-template-columns: .7fr 1.3fr; gap: 8px; margin-top: 8px; }
+.story-actions .button { min-height: 41px; font-size: 10px; }
+.swipe-hint { display: block; margin-top: 7px; text-align: center; font-size: 8px; opacity: .65; }
+.episode-label { position: absolute; z-index: 2; top: 117px; left: 18px; }
+.episode-label span { color: #f1b1e6; font-size: 10px; font-weight: 800; letter-spacing: 1px; }
+.episode-label div { margin-top: 3px; font-size: 25px; font-weight: 800; }
+.next-dialogue { bottom: 225px; }
+.product-page { padding-bottom: 84px; background: white; }
+.product-visual { position: relative; height: 390px; background: #f7f6f7; }
+.product-visual > img { width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; }
+.wish-float { position: absolute; right: 15px; top: 14px; width: 42px; height: 42px; border: 1px solid var(--line); background: white; box-shadow: var(--shadow); }
+.image-dots { position: absolute; bottom: 13px; left: 0; right: 0; display: flex; justify-content: center; gap: 5px; }
+.image-dots i { width: 6px; height: 6px; border-radius: 50%; background: #c8c4c8; }
+.image-dots i.active { width: 17px; border-radius: 4px; background: var(--brand); }
+.product-content { padding: 16px; }
+.context-badge { width: fit-content; margin-bottom: 11px; padding: 6px 9px; border-radius: 7px; display: flex; align-items: center; gap: 5px; color: var(--brand); background: var(--brand-soft); font-size: 9px; }
+.product-name { color: #4e4950; font-size: 15px; line-height: 1.4; }
+.price-row { display: flex; align-items: baseline; gap: 8px; margin-top: 8px; }
+.price-row strong { font-size: 25px; }
+.price-row del { color: var(--muted); font-size: 11px; }
+.price-row span { color: var(--green); font-size: 11px; font-weight: 700; }
+.inclusive { color: var(--muted); font-size: 9px; }
+.rating-line { display: flex; align-items: center; gap: 8px; margin-top: 12px; color: var(--muted); font-size: 9px; }
+.rating-line span { padding: 5px 7px; border-radius: 8px; color: white; background: var(--green); font-weight: 700; }
+.divider { height: 7px; background: var(--canvas); border-block: 1px solid #f1eff1; }
+.variants { display: flex; gap: 8px; margin-top: 12px; }
+.variant { min-height: 36px; padding: 0 16px; font-size: 10px; }
+.delivery-box { display: flex; flex-direction: column; gap: 8px; }
+.delivery-box > strong { font-size: 11px; }
+.delivery-box > span { color: var(--green); font-size: 10px; }
+.pincode { height: 43px; padding: 0 11px; border: 1px solid var(--line); border-radius: 8px; display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 11px; }
+.pincode span { flex: 1; color: var(--ink); }
+.pincode b { color: var(--brand); }
+.verified-card { margin: 0 16px 16px; padding: 14px; display: flex; gap: 11px; color: #16482e; border: 1px solid #cbe6d5; border-radius: 12px; background: #f0fbf4; }
+.verified-card > div { display: flex; flex-direction: column; gap: 3px; }
+.verified-card strong { font-size: 12px; }
+.verified-card span, .verified-card small { font-size: 9px; }
+.review { display: flex; gap: 10px; }
+.avatar-circle { min-width: 35px; height: 35px; border-radius: 50%; display: grid; place-items: center; color: var(--brand); background: var(--brand-soft); font-size: 10px; font-weight: 700; }
+.seller { padding: 15px 16px; display: grid; grid-template-columns: 1fr auto; gap: 4px; background: var(--canvas); font-size: 10px; }
+.seller strong { font-size: 12px; }
+.commerce-bar { position: absolute; z-index: 25; bottom: 0; left: 0; right: 0; width: 100%; box-sizing: border-box; height: 72px; padding: 10px 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 9px; background: white; border-top: 1px solid var(--line); }
+.confirmation { min-height: 100vh; padding-bottom: 30px; background: var(--canvas); }
+.success-panel { padding: 23px 16px 21px; display: flex; flex-direction: column; align-items: center; background: white; text-align: center; }
+.success-icon { width: 74px; height: 74px; margin-bottom: 12px; border-radius: 50%; display: grid; place-items: center; color: white; background: var(--green); box-shadow: 0 0 0 10px #e7f7ed; }
+.success-title { margin-top: 4px; font-size: 25px; font-weight: 800; }
+.success-panel p { margin: 6px 0; color: var(--muted); font-size: 12px; }
+.order-id { color: #99949b; font-size: 9px; }
+.order-card { margin: 12px 16px; padding: 12px; border-radius: 12px; display: flex; gap: 12px; background: white; box-shadow: 0 3px 13px rgba(40,20,36,.05); }
+.order-card img { width: 72px; height: 72px; object-fit: cover; border-radius: 8px; background: #f5f5f5; }
+.order-card div { display: flex; flex-direction: column; gap: 5px; font-size: 10px; }
+.order-card strong { font-size: 12px; }
+.order-card span { color: var(--muted); }
+.order-card b { font-size: 15px; }
+.return-story { margin: 12px 16px; padding: 16px; border: 1px solid var(--brand-pale); border-radius: var(--radius-md); background: white; }
+.return-poster { position: relative; height: 125px; margin: 10px 0 13px; border-radius: 11px; overflow: hidden; }
+.return-poster span { position: absolute; inset: 0; margin: auto; width: 49px; height: 49px; border-radius: 50%; display: grid; place-items: center; color: var(--brand); background: white; }
+.return-story p { margin: 6px 0 13px; color: var(--muted); font-size: 10px; }
+.shopping-link { margin: 2px auto; display: flex; color: var(--brand); font-size: 11px; }
+.customizer-page { padding-bottom: 92px; background: var(--canvas); }
+.custom-step { height: 43px; padding: 0 16px; display: flex; align-items: center; justify-content: center; gap: 6px; color: var(--muted); background: white; font-size: 8px; }
+.custom-step span { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; color: white; background: var(--brand); font-weight: 700; }
+.custom-step i { width: 17px; height: 1px; background: #d5d0d5; }
+.merch-selector { display: flex; gap: 7px; padding: 12px 10px; overflow-x: auto; scrollbar-width: none; background: white; border-top: 1px solid var(--line); }
+.merch-option { min-width: 70px; display: flex; flex-direction: column; gap: 5px; color: var(--muted); font-size: 9px; }
+.merch-option.selected { color: var(--brand); font-weight: 800; }
+.merch-option-icon { width: 50px; height: 50px; border: 1px solid var(--line); border-radius: 10px; display: grid; place-items: center; background: #faf9fa; font-size: 13px; font-weight: 800; }
+.merch-option.selected .merch-option-icon { border: 2px solid var(--brand); background: var(--brand-soft); }
+.preview-stage { position: relative; height: 328px; padding-top: 22px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #fff 0, #f3eff2 72%); overflow: hidden; }
+.preview-stage::after { content: ""; position: absolute; bottom: 29px; width: 230px; height: 18px; border-radius: 50%; background: rgba(43, 26, 39, .1); filter: blur(6px); }
+.preview-label { position: absolute; left: 14px; top: 14px; color: var(--muted); font-size: 8px; letter-spacing: 1px; font-weight: 800; }
+.preview-note { position: absolute; z-index: 2; bottom: 8px; color: var(--muted); font-size: 8px; }
+.merch-preview { position: relative; z-index: 1; width: 210px; height: 235px; display: grid; place-items: center; background: white; filter: drop-shadow(0 12px 14px rgba(42, 24, 38, .16)); transition: background .2s ease, clip-path .2s ease; }
+.merch-t-shirt, .merch-shirt { clip-path: polygon(22% 3%, 38% 0, 43% 10%, 57% 10%, 62% 0, 78% 3%, 100% 19%, 85% 38%, 77% 32%, 77% 100%, 23% 100%, 23% 32%, 15% 38%, 0 19%); }
+.merch-shirt { clip-path: polygon(22% 3%, 43% 0, 50% 10%, 57% 0, 78% 3%, 100% 19%, 85% 38%, 77% 32%, 77% 100%, 23% 100%, 23% 32%, 15% 38%, 0 19%); }
+.merch-hoodie { clip-path: polygon(28% 12%, 36% 1%, 64% 1%, 72% 12%, 83% 16%, 100% 35%, 84% 45%, 76% 35%, 76% 100%, 24% 100%, 24% 35%, 16% 45%, 0 35%, 17% 16%); }
+.merch-pillow { width: 222px; height: 205px; border-radius: 36px 25px 39px 28px; box-shadow: inset 0 0 0 10px rgba(0,0,0,.04); }
+.merch-mug { width: 190px; height: 188px; border-radius: 9px 9px 30px 30px; }
+.mug-handle { position: absolute; z-index: -1; right: -50px; top: 33px; width: 58px; height: 88px; border: 18px solid currentColor; border-left: 0; border-radius: 0 45px 45px 0; color: inherit; }
+.hood { position: absolute; z-index: -1; top: -18px; width: 86px; height: 70px; border-radius: 50% 50% 20% 20%; background: inherit; }
+.merch-color-white { background: #fff; color: #fff; }
+.merch-color-black { background: #29272a; color: #29272a; }
+.merch-color-pink { background: #f2a8cf; color: #f2a8cf; }
+.merch-color-blue { background: #7d9fc7; color: #7d9fc7; }
+.print-area { width: 83px; min-height: 76px; display: grid; place-items: center; color: var(--ink); overflow: hidden; }
+.print-area img { width: 83px; height: 83px; object-fit: cover; border: 2px solid rgba(255,255,255,.8); }
+.photo-placeholder { width: 78px; height: 78px; border: 1.5px dashed #a99da6; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #8b7f88; background: rgba(255,255,255,.82); font-size: 8px; }
+.printed-name { max-width: 110px; padding: 7px; color: var(--brand-dark); border: 2px solid currentColor; font-size: 15px; font-weight: 800; letter-spacing: 1px; text-align: center; word-break: break-word; }
+.custom-controls { margin-top: 8px; padding: 17px 16px 90px; background: white; }
+.mode-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin: 13px 0; }
+.mode-tabs .button { min-height: 41px; padding: 0 10px; font-size: 10px; }
+.upload-box { min-height: 78px; padding: 10px; border: 1.5px dashed #cdbbc9; border-radius: 11px; display: grid; grid-template-columns: 46px 1fr auto; align-items: center; gap: 10px; background: #fdfafd; cursor: pointer; }
+.upload-box > img, .upload-symbol { width: 46px; height: 50px; border-radius: 7px; object-fit: cover; }
+.upload-symbol { display: grid; place-items: center; color: var(--brand); background: var(--brand-soft); font-size: 25px; }
+.upload-box > div:nth-child(2) { display: flex; flex-direction: column; gap: 4px; }
+.upload-box strong { font-size: 11px; }
+.upload-box span { color: var(--muted); font-size: 8px; line-height: 1.35; }
+.upload-box .button { min-height: 31px; padding: 0 9px; font-size: 8px; }
+.hidden-file { display: none; }
+.name-control { position: relative; display: flex; flex-direction: column; gap: 6px; }
+.name-control label { font-size: 10px; font-weight: 700; }
+.name-control input { height: 45px; padding: 0 12px; border: 1px solid #bbb5bb; border-radius: 8px; outline: none; font: inherit; font-size: 12px; font-weight: 700; letter-spacing: .7px; }
+.name-control input:focus { border: 2px solid var(--brand); }
+.name-control > span { align-self: flex-end; color: var(--muted); font-size: 8px; }
+.option-block { margin-top: 19px; }
+.option-block > strong { display: block; margin-bottom: 9px; font-size: 11px; }
+.option-row { display: flex; gap: 7px; }
+.option-row .button { min-width: 45px; min-height: 37px; padding: 0 8px; font-size: 9px; }
+.color-row { display: flex; flex-wrap: wrap; gap: 7px; }
+.color-row .button { min-height: 35px; padding: 0 8px; border: 1px solid var(--line); border-radius: 8px; gap: 5px; color: var(--muted); font-size: 8px; }
+.color-row .button.selected { border: 2px solid var(--brand); color: var(--brand); }
+.color-dot { width: 14px; height: 14px; border-radius: 50%; border: 1px solid #c9c5c9; }
+.color-white { background: white; }.color-black { background: #29272a; }.color-pink { background: #f2a8cf; }.color-blue { background: #7d9fc7; }
+.print-promise { margin-top: 18px; padding: 12px; display: flex; gap: 10px; color: #16482e; border-radius: 10px; background: #edf9f1; }
+.print-promise > div { display: flex; flex-direction: column; gap: 3px; }
+.print-promise strong { font-size: 10px; }.print-promise span { font-size: 8px; }
+.custom-summary { margin-top: 17px; padding-top: 15px; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; }
+.custom-summary > div { display: flex; flex-direction: column; gap: 3px; }
+.custom-summary span { color: var(--muted); font-size: 9px; }
+.custom-summary strong { font-size: 19px; }
+.custom-summary small { color: var(--green); font-size: 8px; }
+.added-toast { position: absolute; z-index: 30; bottom: 82px; left: 16px; right: 16px; width: auto; box-sizing: border-box; padding: 11px 14px; border-radius: 9px; display: flex; align-items: center; gap: 8px; color: white; background: #2d292c; font-size: 10px; font-weight: 700; }
+.custom-commerce .button { padding: 0 10px; font-size: 10px; }
+.custom-success { min-height: 100vh; background: var(--canvas); }
+.custom-success-body { padding: 32px 16px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.custom-success-body > p { max-width: 320px; color: var(--muted); font-size: 11px; line-height: 1.5; }
+.custom-order-preview { width: 100%; margin: 14px 0; padding: 13px; border-radius: 13px; display: flex; align-items: center; gap: 15px; background: white; text-align: left; }
+.compact-preview { width: 78px; height: 88px; flex: 0 0 auto; filter: none; }
+.compact-preview .print-area { transform: scale(.45); }
+.product-mini-t-shirt { margin: 8px 14px; clip-path: polygon(23% 0, 39% 0, 43% 10%, 57% 10%, 61% 0, 77% 0, 100% 16%, 86% 36%, 77% 30%, 77% 100%, 23% 100%, 23% 30%, 14% 36%, 0 16%); background: white; filter: drop-shadow(0 4px 5px rgba(0,0,0,.12)); }
+/* ─── VERTICAL PRESENTATION PANEL & STAGE ─── */
+.prototype-wrapper {
+  display: flex;
+  min-height: 100vh;
+  background: #0d0b12;
+  color: #f0edf4;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  position: relative;
+}
+
+/* Vertical Sidebar */
+.vertical-nav-panel {
+  width: 290px;
+  min-width: 290px;
+  max-width: 290px;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  background: #14111a;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
+}
+
+.vpanel-header {
+  padding: 18px 16px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: #100d16;
+  flex-shrink: 0;
+}
+
+.vpanel-badge-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.vpanel-pill {
+  background: #9f2089;
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+}
+
+.vpanel-source {
+  font-size: 10px;
+  font-weight: 800;
+  color: #ffb5e8;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.vpanel-title {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.35;
+}
+
+.vpanel-desc {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: #9c97a8;
+  line-height: 1.3;
+}
+
+/* Scrollable Step Groups */
+.vpanel-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 8px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+.vpanel-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+.vpanel-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+
+.vpanel-group {
+  margin-bottom: 14px;
+}
+
+.vgroup-header {
+  padding: 6px 8px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vgroup-title {
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: #ffb5e8;
+}
+
+.vgroup-count {
+  font-size: 10px;
+  color: #8d8898;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.vstep-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.vstep-btn {
+  width: 100%;
+  padding: 7px 9px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: #d1cbd8;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-sizing: border-box;
+}
+
+.vstep-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  transform: translateX(2px);
+}
+
+.vstep-btn.active {
+  background: linear-gradient(135deg, #9f2089, #b92ca0);
+  border-color: #e567ce;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(159, 32, 137, 0.45);
+}
+
+.vstep-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #b7b0c2;
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  font-weight: 800;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.vstep-btn.active .vstep-num {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+.vstep-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.vstep-name {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: inherit;
+  line-height: 1.25;
+}
+
+.vstep-sub {
+  font-size: 9.5px;
+  color: #8e889a;
+  line-height: 1.2;
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vstep-btn.active .vstep-sub {
+  color: #ffd9f6;
+}
+
+.vstep-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 6px #ffffff;
+  flex-shrink: 0;
+}
+
+/* Panel Footer */
+.vpanel-footer {
+  padding: 12px 14px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: #100d16;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.vpanel-reset-btn {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 7px;
+  background: rgba(255, 181, 232, 0.08);
+  color: #ffb5e8;
+  border: 1px solid rgba(255, 181, 232, 0.25);
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.vpanel-reset-btn:hover {
+  background: #9f2089;
+  color: #ffffff;
+  border-color: #9f2089;
+}
+
+.vpanel-hub-link {
+  font-size: 11px;
+  color: #9c97a8;
+  text-align: center;
+  text-decoration: none;
+  padding: 4px;
+  transition: color 0.15s;
+}
+
+.vpanel-hub-link:hover {
+  color: #ffffff;
+}
+
+/* Main Prototype Stage */
+.prototype-stage {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 32px 20px;
+  background: #eef0f3;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.device-frame-wrap {
+  width: 100%;
+  max-width: 440px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.phone-shell {
+  width: 100%;
+  max-width: 410px;
+  height: 820px;
+  background: white;
+  color: var(--ink);
+  border-radius: 36px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.22);
+  position: relative;
+  border: 4px solid #1f1b24;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.home-indicator {
+  width: 126px;
+  height: 4px;
+  position: absolute;
+  left: calc(50% - 63px);
+  bottom: 5px;
+  z-index: 50;
+  border-radius: 4px;
+  background: #1b1535;
+  pointer-events: none;
+}
+
+/* Mobile drawer toggle */
+.panel-mobile-toggle {
+  display: none;
+}
+
+.panel-backdrop {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  .panel-mobile-toggle {
+    display: flex;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 1000;
+    background: #18141c;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+    padding: 7px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    cursor: pointer;
+  }
+  .vertical-nav-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    z-index: 1001;
+    width: 280px;
+  }
+  .vertical-nav-panel.open {
+    transform: translateX(0);
+  }
+  .panel-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 1000;
+    backdrop-filter: blur(2px);
+  }
+  .prototype-stage {
+    padding: 56px 8px 16px;
+  }
+  .phone-shell {
+    border-radius: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    min-height: 100vh;
+  }
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useRef } = React;
+
+const images = {
+  friends: "https://images.unsplash.com/photo-1670602462408-3a0d153768d7?crop=faces&fit=crop&w=900&h=1200&q=84",
+  ravi: "https://images.unsplash.com/photo-1712917125122-3d5b6527bf47?crop=faces&fit=crop&w=900&h=1200&q=84",
+  city: "https://images.unsplash.com/photo-1619763470573-5c0df45bf6ef?crop=faces&fit=crop&w=900&h=1200&q=84",
+  wedding: "https://images.unsplash.com/photo-1639575668829-c56a82db9f00?crop=faces&fit=crop&w=900&h=1200&q=84",
+  room: "https://images.unsplash.com/photo-1715405155652-3147e1db15e9?crop=faces&fit=crop&w=900&h=1200&q=84",
+  trimmer: "https://images.unsplash.com/photo-1643495350935-25cc12678b57?fit=crop&w=800&h=800&q=84",
+  watch: "https://images.unsplash.com/photo-1569411032431-07598b0012c2?fit=crop&w=800&h=800&q=84",
+};
+
+function Icon({ name, size = 22 }) {
+  const paths = {
+    home: <><path d="M3 10.5 12 3l9 7.5" /><path d="M5 9.5V21h14V9.5M9 21v-7h6v7" /></>,
+    grid: <><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></>,
+    play: <path d="m8 5 11 7-11 7V5Z" />,
+    pause: <><path d="M9 5v14M15 5v14" /></>,
+    bag: <><path d="M5 8h14l-1 13H6L5 8Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></>,
+    user: <><circle cx="12" cy="8" r="4" /><path d="M4.5 21a7.5 7.5 0 0 1 15 0" /></>,
+    search: <><circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 5 5" /></>,
+    pin: <><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" /><circle cx="12" cy="10" r="2.5" /></>,
+    back: <path d="m15 18-6-6 6-6" />,
+    heart: <path d="M20.8 5.7a5.5 5.5 0 0 0-7.8 0L12 6.8l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 22l8.8-8.5a5.5 5.5 0 0 0 0-7.8Z" />,
+    share: <><circle cx="18" cy="5" r="2.5" /><circle cx="6" cy="12" r="2.5" /><circle cx="18" cy="19" r="2.5" /><path d="m8.2 10.8 7.6-4.5M8.2 13.2l7.6 4.5" /></>,
+    cart: <><path d="M3 4h2l2.2 11h10.5l2-7H6" /><circle cx="9" cy="20" r="1" /><circle cx="17" cy="20" r="1" /></>,
+    check: <path d="m5 12 4.5 4.5L19 7" />,
+    shield: <><path d="M12 3 5 6v5c0 4.7 2.9 8.4 7 10 4.1-1.6 7-5.3 7-10V6l-7-3Z" /><path d="m9 12 2 2 4-4" /></>,
+  };
+  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{paths[name]}</svg>;
+}
+
+function Btn({ children, onClick, variant = "primary", className = "", disabled }) {
+  return <button type="button" onClick={onClick} disabled={disabled} className={`button button-${variant} ${className}`}>{children}</button>;
+}
+
+function Logo() { return <div className="logo">meesho</div>; }
+
+function AppHeader({ title, onBack, actions }) {
+  return <div className="app-header"><div className="header-left">{onBack ? <Btn variant="ghost" className="icon-button" onClick={onBack}><Icon name="back" /></Btn> : null}{title ? <div className="header-title">{title}</div> : <Logo />}</div><div className="header-actions">{actions}</div></div>;
+}
+
+const navItems = [
+  { label: "Home", icon: "home", route: "home" },
+  { label: "Categories", icon: "grid", route: "categories" },
+  { label: "MiniDrama", icon: "play", route: "discover" },
+  { label: "Orders", icon: "bag", route: "confirmation" },
+  { label: "Account", icon: "user", route: "home" },
+];
+
+function BottomNav({ screen, go }) {
+  const miniActive = ["discover","series","episode","product","confirmation","nextEpisode"].includes(screen);
+  return <nav className="bottom-nav">{navItems.map(item => {
+    const active = item.label === "MiniDrama" ? miniActive : item.label === "Categories" ? ["categories","customize"].includes(screen) : screen === item.route && !miniActive;
+    return <button key={item.label} className={`nav-item ${active ? "active" : ""}`} onClick={() => go(item.route)}><span className={item.label === "MiniDrama" ? "nav-play" : ""}><Icon name={item.icon} size={20} /></span><span>{item.label}</span></button>;
+  })}</nav>;
+}
+
+function Poster({ image, label, className = "" }) { return <img className={`poster ${className}`} src={image} alt={label} />; }
+
+const dramas = [
+  { title: "First Salary", ep: "Episode 6", time: "2 min", hook: "Naukri ka pehla din… aur pehli shopping.", image: images.friends, genre: "Comedy • Career" },
+  { title: "Bhai Ki Shaadi", ep: "Episode 4", time: "2 min", hook: "Shaadi ghar ki hai, tension sabki.", image: images.wedding, genre: "Family • Comedy" },
+  { title: "Room No. 302", ep: "Episode 8", time: "3 min", hook: "Naya room. Nayi life. Naye jugaad.", image: images.room, genre: "Friendship • Comedy" },
+  { title: "Gaon Se Sheher", ep: "Episode 3", time: "2 min", hook: "Sapne bade hain, sheher naya hai.", image: images.city, genre: "Aspirational • Drama" },
+];
+
+function SearchBar() { return <div className="searchbar"><Icon name="search" size={19} /><span>Search for products or stories</span><span className="search-camera">▣</span></div>; }
+
+function Home({ go }) {
+  const categories = [["For You","◎"],["Fashion","◫"],["Custom Prints","✦"],["Mobiles","▯"],["Beauty","◇"],["Home","⌂"]];
+  return <><main className="screen-content"><div className="home-head"><AppHeader actions={<><Icon name="heart" /><Icon name="cart" /></>} /><SearchBar /><div className="location-row"><Icon name="pin" size={18} /><div><span>Delivering to</span><strong>Vijay Nagar, Indore - 452010</strong></div><span className="chevron">›</span></div></div>
+    <section className="category-strip">{categories.map(([label, icon]) => <div className="category" key={label} onClick={() => go(label === "Custom Prints" ? "customize" : "categories")}><div className="category-icon">{icon}</div><span>{label}</span></div>)}</section>
+    <section className="sale-banner"><div><span className="sale-kicker">MEESHO MAHA SAVINGS</span><div className="sale-title">Lowest prices,<br/>every single day</div><span className="sale-note">Free delivery on your first order</span></div><div className="sale-badge">50%<small>OFF</small></div></section>
+    <section className="mini-section"><div className="mini-heading"><div className="clapper"><Icon name="play" size={17} /></div><div><div className="eyebrow">MEESHO MINIDRAMA</div><div className="section-title">Watch. Discover. Shop.</div></div></div><div className="section-sub" style={{margin:'8px 0 15px 48px'}}>Short stories. New episodes. Products you'll love.</div><div className="home-dramas">{dramas.slice(0,3).map(d => <article className="home-drama-card" key={d.title} onClick={() => go("series")}><div className="poster-wrap"><Poster image={d.image} label={d.title} /><span className="duration">{d.time}</span></div><div className="home-drama-info"><strong>{d.title}</strong><span>{d.ep}</span><p>{d.hook}</p><span className="text-cta">Watch Now <b>›</b></span></div></article>)}</div><Btn className="wide" onClick={() => go("discover")}><Icon name="play" size={18} /> Watch MiniDrama</Btn></section>
+    <section className="shopping-section"><div className="section-row"><div className="section-title">Deals for you</div><span className="text-cta">View all ›</span></div><div className="product-grid"><div className="product-tile"><img src={images.watch} alt="Smart Watches" /><span>Smart Watches</span><strong>₹899 onwards</strong><small>Free Delivery</small></div><div className="product-tile"><img src={images.trimmer} alt="Grooming" /><span>Grooming essentials</span><strong>₹349 onwards</strong><small>Free Delivery</small></div></div></section>
+  </main><BottomNav screen="home" go={go} /></>;
+}
+
+function Discover({ go }) {
+  const filters = ["Trending","New Episodes","Comedy","Love & Relationships","Career","Family"];
+  return <><main className="screen-content"><AppHeader title="MiniDrama" actions={<Icon name="search" />} /><div className="discover-intro"><div className="display-title">Stories made<br/>for your break.</div><div className="section-sub">Short stories you'll want to come back for.</div></div><div className="chips">{filters.map((f,i) => <span className={`chip ${i===0?"selected":""}`} key={f}>{f}</span>)}</div>
+    <section className="continue-card" onClick={() => go("episode")}><Poster image={images.friends} label="First Salary" /><div className="continue-info"><span className="eyebrow light">CONTINUE WATCHING</span><strong>First Salary</strong><span>Episode 5 • 01:24 left</span><div className="progress"><i /></div><span className="continue-link">Continue Watching →</span></div><div className="round-play"><Icon name="play" /></div></section>
+    <section className="feed-section"><div className="section-row"><div className="section-title">Trending now</div><span className="muted">Fresh today</span></div><div className="drama-feed">{dramas.map((d,i) => <article className="feed-card" key={d.title}><div className="feed-poster" onClick={() => go("series")}><Poster image={d.image} label={d.title} /><span className="rank">0{i+1}</span><span className="duration">{d.time}</span></div><div className="feed-info"><span className="genre">{d.genre}</span><strong>{d.title}</strong><span>{d.ep} • {d.time}</span><p>{d.hook}</p><Btn className="compact" onClick={() => go("series")}><Icon name="play" size={16} /> Watch Now</Btn></div></article>)}</div></section>
+  </main><BottomNav screen="discover" go={go} /></>;
+}
+
+const episodes = [["1","Interview Day","Ravi ka pehla bada mauka.","2:12"],["2","First Day","Office naya, rules naye.","2:04"],["3","Salary Credit","Message aaya aur plan ban gaya.","2:31"],["4","Bhai, Budget Bana!","Roommate ka free financial gyaan.","2:20"]];
+
+function Series({ go }) {
+  return <><main className="screen-content detail-screen"><div className="series-hero"><Poster image={images.friends} label="First Salary poster" /><div className="hero-shade" /><AppHeader onBack={() => go("discover")} actions={<><Btn variant="ghost" className="icon-button glass"><Icon name="share" /></Btn><Btn variant="ghost" className="icon-button glass"><Icon name="heart" /></Btn></>} /><div className="hero-copy"><span className="pill-light">Comedy • Career</span><div className="hero-title">First Salary</div><p>Ravi gets his first job in the city and discovers that earning money is easier than managing it.</p></div></div>
+    <div className="series-body"><div className="meta-row"><span className="rating">★ 4.6</span><span>12 Episodes</span><span>2–3 min each</span></div><Btn className="wide" onClick={() => go("episode")}><Icon name="play" size={18} /> Continue Watching</Btn><Btn variant="outline" className="wide" onClick={() => go("episode")}>Start from Episode 1</Btn>
+      <div className="section-row episode-title-row"><div><div className="section-title">Episodes</div><span className="muted">Season 1</span></div><span className="season-pill">12 episodes⌄</span></div>
+      <div className="episode-list">{episodes.map(ep => <article className="episode-row" key={ep[0]}><div className="episode-thumb"><Poster image={Number(ep[0])%2 ? images.ravi : images.friends} label={ep[1]} /><span><Icon name="play" size={15} /></span></div><div className="episode-info"><span>EPISODE {ep[0]}</span><strong>{ep[1]}</strong><p>{ep[2]}</p><small>{ep[3]}</small></div><Btn variant="outline" className="watch-button" onClick={() => go("episode")}>Watch</Btn></article>)}</div>
+    </div>
+  </main><BottomNav screen="series" go={go} /></>;
+}
+
+function Episode({ go, scene, setScene }) {
+  const videoRef = useRef(null);
+  const [playing, setPlaying] = useState(false);
+  const [videoError, setVideoError] = useState(false);
+  const scenes = [
+    { quote: "Bhai, beard toh bana le. Aaj interview hai!", speaker: "Vicky", note: "\u00a0\u00a0\u00a0\u00a0\u00a0" },
+    { quote: "Bas yahi hona tha!", speaker: "Ravi", note: "The old trimmer stops working." },
+    { quote: "Ye wala try kar. Battery bhi full hai.", speaker: "Vicky", note: "A small problem, sorted just in time." },
+  ];
+  const current = scenes[scene];
+  const togglePlayback = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) { video.play().catch(() => setVideoError(true)); } else { video.pause(); }
+  };
+  const seekToScene = (n) => { const video = videoRef.current; setScene(n); if (video?.duration) video.currentTime = (video.duration / scenes.length) * n; };
+
+  return <main className="story-screen">
+    <video ref={videoRef} className="story-video" poster={images.friends} playsInline preload="metadata" onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onEnded={() => { setPlaying(false); setScene(scenes.length-1); }} onError={() => setVideoError(true)}>
+      <source src="https://media.w3.org/2010/05/sintel/trailer.mp4" type="video/mp4" />
+    </video>
+    <div className="story-overlay" />
+    <div className="story-top"><div className="story-progress">{scenes.map((_,i) => <i key={i} className={i <= scene ? "filled" : ""} />)}</div><div className="story-header"><Btn variant="ghost" className="icon-button glass" onClick={() => go("series")}><Icon name="back" /></Btn><div><strong>First Salary</strong><span>Episode 6 • Interview Day</span></div><Btn variant="ghost" className="icon-button glass"><Icon name="share" /></Btn></div></div>
+    <button className={`play-control ${playing ? "is-playing" : ""}`} onClick={togglePlayback}><Icon name={playing ? "pause" : "play"} size={30} /></button>
+    {videoError && <div style={{position:'absolute',zIndex:4,top:135,left:18,right:18,padding:'9px 11px',borderRadius:9,color:'white',background:'rgba(117,22,100,.88)',fontSize:9,lineHeight:1.4,textAlign:'center'}}>Video needs an internet connection. Continue the story below.</div>}
+    <div className="dialogue"><span>{current.note}</span></div>
+    <div className="story-bottom">
+      <section className="story-product" onClick={() => go("product")}><img src={images.trimmer} alt="Nova Cordless Trimmer" /><div className="story-product-copy"><span>USED IN THIS EPISODE</span><strong>Nova Cordless Trimmer</strong><div><b>₹699</b><small>★ 4.2 • 10K+ ratings</small></div></div><Btn className="product-arrow" onClick={() => go("product")}>View Product <b>›</b></Btn></section>
+      <div className="story-actions"><Btn variant="dark" onClick={() => seekToScene(Math.max(0, scene-1))} disabled={scene===0}>Previous</Btn>{scene < scenes.length-1 ? <Btn onClick={() => seekToScene(scene+1)}>Continue Watching <b>›</b></Btn> : <Btn onClick={() => go("nextEpisode")}>Next Episode <b>›</b></Btn>}</div>
+      <span className="swipe-hint">{playing ? "Now playing with audio" : "Tap play to watch with audio"}</span>
+    </div>
+  </main>;
+}
+
+function Product({ go, kind, setKind }) {
+  const watch = kind === "watch";
+  const title = watch ? "Fire-Boltt Smartwatch with Bluetooth Calling" : "Nova Cordless Trimmer for Men";
+  const image = watch ? images.watch : images.trimmer;
+  const price = watch ? "₹899" : "₹699";
+  const returnScreen = watch ? "nextEpisode" : "episode";
+  const [variant, setVariant] = useState("Black");
+  const [added, setAdded] = useState(false);
+  return <><main className="screen-content product-page"><AppHeader onBack={() => go(returnScreen)} actions={<><Icon name="search" /><Icon name="share" /><Icon name="cart" /></>} />
+    <div className="product-visual"><img src={image} alt={title} /><Btn variant="ghost" className="wish-float"><Icon name="heart" /></Btn><div className="image-dots"><i className="active" /><i /><i /></div></div>
+    <div className="product-content"><div className="context-badge"><Icon name="play" size={14} /> Seen in <strong>First Salary • Episode {watch ? "7" : "6"}</strong></div><div className="product-name">{title}</div><div className="price-row"><strong>{price}</strong><del>{watch ? "₹2,499" : "₹1,299"}</del><span>{watch ? "64%" : "46%"} off</span></div><span className="inclusive">Inclusive of all taxes</span><div className="rating-line"><span>4.{watch ? "3" : "2"} ★</span><b>{watch ? "7,842" : "10,361"} Ratings</b><b>1,204 Reviews</b></div></div>
+    <div className="divider" /><section className="product-content"><div className="section-title">Select variant</div><div className="variants">{["Black", watch ? "Grey" : "Blue"].map(v => <Btn key={v} variant={variant===v?"soft":"outline"} className="variant" onClick={() => setVariant(v)}>{v}</Btn>)}</div></section>
+    <div className="divider" /><section className="product-content delivery-box"><div className="section-title">Delivery details</div><div className="pincode"><Icon name="pin" size={18} /><span>452010</span><b>Change</b></div><strong>Delivery by Thursday, 12 June</strong><span>Free Delivery</span></section>
+    <section className="verified-card"><Icon name="shield" size={28} /><div><strong>Meesho Verified Plus</strong><span>Quality checked product from a trusted seller</span></div></section>
+    <Btn variant="ghost" style={{margin:'18px auto',display:'flex',color:'var(--brand)'}} onClick={() => go(returnScreen)}><Icon name="back" size={18} /> Back to Episode</Btn>
+  </main><div className="commerce-bar"><Btn variant="outline" onClick={() => setAdded(true)}><Icon name="cart" size={18} /> {added ? "Added ✓" : "Add to Cart"}</Btn><Btn onClick={() => { setKind(kind); go("confirmation"); }}>Buy Now</Btn></div></>;
+}
+
+function Confirmation({ go, kind }) {
+  const watch = kind === "watch";
+  return <main className="confirmation"><AppHeader title="Order Confirmation" />
+    <section className="success-panel"><div className="success-icon"><Icon name="check" size={40} /></div><div className="success-title">Order placed! 🎉</div><p>Your order is confirmed.</p><span className="order-id">Order ID #MSH2748196</span></section>
+    <section className="order-card"><img src={watch ? images.watch : images.trimmer} alt="" /><div><strong>{watch ? "Fire-Boltt Smartwatch" : "Nova Cordless Trimmer"}</strong><span>{watch ? "Black" : "Black • 1 item"}</span><b>{watch ? "₹899" : "₹699"}</b></div></section>
+    <section className="return-story"><span className="eyebrow">YOUR STORY IS WAITING</span><div className="return-poster"><Poster image={images.friends} label="First Salary" /><span><Icon name="play" size={28} /></span></div><div className="section-title">See what happens to Ravi</div><p>Pick up exactly where you left off in Episode 6.</p><Btn className="wide" onClick={() => go(watch ? "nextEpisode" : "episode")}><Icon name="play" size={18} /> Continue Episode</Btn></section>
+    <Btn variant="ghost" className="shopping-link" onClick={() => go("home")}>Continue Shopping</Btn>
+  </main>;
+}
+
+function NextEpisode({ go, setKind }) {
+  const [scene, setScene] = useState(0);
+  return <main className="story-screen">
+    <Poster image={scene === 0 ? images.city : images.friends} label="Story scene" className="story-bg" />
+    <div className="story-overlay" />
+    <div className="story-top"><div className="story-progress"><i className="filled" /><i className={scene > 0 ? "filled" : ""} /><i /></div><div className="story-header"><Btn variant="ghost" className="icon-button glass" onClick={() => go("episode")}><Icon name="back" /></Btn><div><strong>First Salary</strong><span>Episode 7 • Salary Aa Gayi!</span></div><Btn variant="ghost" className="icon-button glass"><Icon name="share" /></Btn></div></div>
+    <button className="play-control" onClick={() => setScene(scene === 0 ? 1 : 0)}><Icon name="play" size={30} /></button>
+    <div className="episode-label"><span>EPISODE 7</span><div>Salary Aa Gayi!</div></div>
+    <div className="dialogue next-dialogue"><span>Salary credited • ₹24,500</span><div>{scene === 0 ? "Maa ke liye gift pakka. Par pehle ek chhota celebration?" : "Office time pe pahunchna bhi toh zaroori hai!"}</div><strong>- Ravi</strong></div>
+    <div className="story-bottom">
+      <section className="story-product" onClick={() => { setKind("watch"); go("product"); }}><img src={images.watch} alt="Fire-Boltt Smartwatch" /><div className="story-product-copy"><span>SEEN IN THIS EPISODE</span><strong>Fire-Boltt Smartwatch</strong><div><b>₹899</b><small>★ 4.3 • 7K+ ratings</small></div></div><Btn className="product-arrow" onClick={() => { setKind("watch"); go("product"); }}>View Product <b>›</b></Btn></section>
+      <Btn className="wide" onClick={() => setScene(1)}>Watch Next Episode <b>›</b></Btn>
+      <span className="swipe-hint">New product, naturally part of Ravi's story</span>
+    </div>
+  </main>;
+}
+
+const shoppingCategories = [
+  ["Women Ethnic", "WE"],
+  ["Men Fashion", "MF"],
+  ["Home & Kitchen", "HK"],
+  ["Beauty", "BY"],
+  ["Mobiles", "MB"],
+  ["Footwear", "FW"],
+  ["Kids", "KD"],
+  ["Jewellery", "JW"],
+];
+
+function Categories({ go }) {
+  return <>
+    <main className="screen-content categories-page">
+      <AppHeader title="Categories" actions={<Icon name="cart" />} />
+      <SearchBar />
+      <section className="custom-category-hero" onClick={() => go("customize")}>
+        <div className="custom-hero-copy">
+          <span className="custom-new">NEW ON MEESHO</span>
+          <div className="custom-hero-title">Customizable Prints</div>
+          <p>Your photo or name, printed on merch made for you.</p>
+          <Btn onClick={() => go("customize")}>Start Customizing <b>›</b></Btn>
+        </div>
+        <div className="hero-merch">
+          <div className="mini-shirt"><span>RAHUL</span></div>
+          <div className="mini-mug"><span>♥</span></div>
+        </div>
+      </section>
+      <section className="category-page-section">
+        <div className="section-title">Shop by category</div>
+        <div className="category-grid">
+          {shoppingCategories.map(([name, mark], index) => (
+            <article className="category-grid-item" key={name}>
+              <div className={`category-mark category-tone-${index + 1}`}>{mark}</div>
+              <span>{name}</span>
+            </article>
+          ))}
+        </div>
+      </section>
+      <section className="personalize-strip" onClick={() => go("customize")}>
+        <div className="personalize-icon"><Icon name="user" size={25} /></div>
+        <div><strong>Make it yours</strong><span>Upload photo or add a name</span></div>
+        <b>›</b>
+      </section>
+      <section className="category-page-section">
+        <div className="section-row"><div className="section-title">Popular customized gifts</div><span className="text-cta" onClick={() => go("customize")}>See all</span></div>
+        <div className="custom-product-row">
+          <CustomMiniProduct type="T-Shirt" price="₹399" />
+          <CustomMiniProduct type="Mug" price="₹249" />
+          <CustomMiniProduct type="Pillow" price="₹349" />
+        </div>
+      </section>
+    </main>
+    <BottomNav screen="categories" go={go} />
+  </>;
+}
+
+function CustomMiniProduct({ type, price }) {
+  return (
+    <div className="custom-mini-product">
+      <div className={`mini-merch product-mini-${type.toLowerCase()}`}><span>✦</span></div>
+      <strong>Custom {type}</strong><span>{price}</span><small>Free Delivery</small>
+    </div>
+  );
+}
+
+function Customizer({ go }) {
+  const uploadRef = useRef(null);
+  const [merch, setMerch] = useState("T-Shirt");
+  const [mode, setMode] = useState("photo");
+  const [photo, setPhoto] = useState("");
+  const [name, setName] = useState("RAHUL");
+  const [size, setSize] = useState("M");
+  const [color, setColor] = useState("White");
+  const [added, setAdded] = useState(false);
+  const [ordered, setOrdered] = useState(false);
+  const prices = { "T-Shirt": "₹399", Shirt: "₹499", Hoodie: "₹699", Pillow: "₹349", Mug: "₹249" };
+
+  const onFile = (event) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setPhoto(URL.createObjectURL(file));
+      setMode("photo");
+    }
+  };
+
+  if (ordered) {
+    return (
+      <main className="custom-success">
+        <AppHeader title="Order Confirmation" onBack={() => setOrdered(false)} />
+        <div className="custom-success-body">
+          <div className="success-icon"><Icon name="check" size={40} /></div>
+          <div className="success-title">Personalized order placed!</div>
+          <p>Your custom {merch.toLowerCase()} is confirmed. We'll print it after a quick quality check.</p>
+          <div className="custom-order-preview">
+            <MerchPreview merch={merch} mode={mode} photo={photo} name={name} color={color} compact />
+            <div><strong>Custom {merch}</strong><span>{mode === "photo" ? "Photo print" : `Name: ${name}`}</span><b>{prices[merch]}</b></div>
+          </div>
+          <div className="verified-card custom-verified"><Icon name="shield" size={28} /><div><strong>Print quality protected</strong><span>We'll contact you if your photo needs adjustment.</span></div></div>
+          <Btn className="wide" onClick={() => go("home")}>Continue Shopping</Btn>
+          <Btn variant="ghost" className="shopping-link" onClick={() => setOrdered(false)}>Create another design</Btn>
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <>
+      <main className="screen-content customizer-page">
+      <AppHeader title="Customize Your Product" onBack={() => go("categories")} actions={<Icon name="cart" />} />
+      <div className="custom-step"><span>1</span> Choose product <i /><span>2</span> Add design <i /><span>3</span> Order</div>
+      <section className="merch-selector">
+        {["T-Shirt", "Shirt", "Hoodie", "Pillow", "Mug"].map((item) => (
+          <Btn key={item} variant="ghost" className={`merch-option ${merch === item ? "selected" : ""}`} onClick={() => setMerch(item)}>
+            <span className={`merch-option-icon shape-${item.toLowerCase()}`}>{item.slice(0, 1)}</span><span>{item}</span>
+          </Btn>
+        ))}
+      </section>
+
+      <section className="preview-stage">
+        <span className="preview-label">LIVE PREVIEW</span>
+        <MerchPreview merch={merch} mode={mode} photo={photo} name={name} color={color} />
+        <span className="preview-note">Actual print size may vary slightly</span>
+      </section>
+
+      <section className="custom-controls">
+        <div className="section-title">What would you like to print?</div>
+        <div className="mode-tabs">
+          <Btn variant={mode === "photo" ? "soft" : "outline"} onClick={() => setMode("photo")}>Upload Photo</Btn>
+          <Btn variant={mode === "name" ? "soft" : "outline"} onClick={() => setMode("name")}>Add Name / Text</Btn>
+        </div>
+        {mode === "photo" ? (
+          <div className="upload-box" onClick={() => uploadRef.current?.click()}>
+            {photo ? <img src={photo} alt="Your uploaded print" /> : <div className="upload-symbol">+</div>}
+            <div><strong>{photo ? "Photo uploaded" : "Choose a photo"}</strong><span>{photo ? "Tap to replace photo" : "JPG or PNG • Clear photos print best"}</span></div>
+            <Btn variant="outline" onClick={(e) => { e.stopPropagation(); uploadRef.current?.click(); }}>{photo ? "Change" : "Upload"}</Btn>
+            <input ref={uploadRef} type="file" accept="image/png,image/jpeg" onChange={onFile} className="hidden-file" aria-label="Upload photo to print" />
+          </div>
+        ) : (
+          <div className="name-control">
+            <label htmlFor="print-name">Name or message</label>
+            <input id="print-name" value={name} maxLength={18} onChange={(e) => setName(e.target.value.toUpperCase())} placeholder="ENTER NAME" aria-label="Name to print" />
+            <span>{name.length}/18 characters</span>
+          </div>
+        )}
+
+        {!["Pillow", "Mug"].includes(merch) && (
+          <div className="option-block"><strong>Select size</strong><div className="option-row">{["S", "M", "L", "XL", "XXL"].map((item) => <Btn key={item} variant={size === item ? "soft" : "outline"} onClick={() => setSize(item)}>{item}</Btn>)}</div></div>
+        )}
+        <div className="option-block"><strong>Select color</strong><div className="color-row">{["White", "Black", "Pink", "Blue"].map((item) => <Btn key={item} variant="ghost" className={color === item ? "selected" : ""} onClick={() => setColor(item)}><i className={`color-dot color-${item.toLowerCase()}`} />{item}</Btn>)}</div></div>
+        <div className="print-promise"><Icon name="shield" size={25} /><div><strong>Meesho Print Promise</strong><span>Preview checked before printing • Easy help for print issues</span></div></div>
+        <section className="custom-summary">
+          <div><span>Custom {merch}</span><strong>{prices[merch]}</strong><small>Free Delivery • Made to order</small></div>
+          <span>Delivery in 6 to 8 days</span>
+        </section>
+      </section>
+      {added && <div className="added-toast"><Icon name="check" size={17} /> Personalized item added to cart</div>}
+    </main>
+    <div className="commerce-bar custom-commerce">
+      <Btn variant="outline" onClick={() => setAdded(true)}><Icon name="cart" size={18} /> Add to Cart</Btn>
+      <Btn onClick={() => setOrdered(true)}>Buy Now • {prices[merch]}</Btn>
+    </div>
+  </>
+  );
+}
+
+function MerchPreview({ merch, mode, photo, name, color, compact = false }) {
+  return (
+    <div className={`merch-preview merch-${merch.toLowerCase()} merch-color-${color.toLowerCase()} ${compact ? "compact-preview" : ""}`}>
+      <div className="print-area">
+        {mode === "photo" ? (
+          photo ? <img src={photo} alt="Uploaded design preview" /> : <div className="photo-placeholder"><Icon name="user" size={compact ? 18 : 34} /><span>Your photo</span></div>
+        ) : <span className="printed-name">{name || "YOUR NAME"}</span>}
+      </div>
+      {merch === "Mug" && <i className="mug-handle" />}
+      {merch === "Hoodie" && <i className="hood" />}
+    </div>
+  );
+}
+
+function App() {
+  const [screen, setScreen] = useState("home");
+  const [episodeScene, setEpisodeScene] = useState(0);
+  const [productKind, setProductKind] = useState("trimmer");
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const go = (next) => {
+    setScreen(next);
+    setMobileOpen(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const resetFlow = () => {
+    setEpisodeScene(0);
+    setProductKind("trimmer");
+    go("home");
+  };
+
+  return (
+    <div className="prototype-wrapper">
+      <button
+        className="panel-mobile-toggle"
+        onClick={() => setMobileOpen(!mobileOpen)}
+        aria-label="Toggle navigation panel"
+      >
+        <span>{mobileOpen ? "✕ Close Steps" : "☰ Flow Steps"}</span>
+      </button>
+
+      {mobileOpen && (
+        <div className="panel-backdrop" onClick={() => setMobileOpen(false)} />
+      )}
+
+      <aside className={`vertical-nav-panel ${mobileOpen ? "open" : ""}`}>
+        <div className="vpanel-header">
+          <div className="vpanel-badge-row">
+            <span className="vpanel-pill">FEATURE 2</span>
+            <span className="vpanel-source">Meesho DICE</span>
+          </div>
+          <h1 className="vpanel-title">MiniDrama & Creator Merch</h1>
+          <p className="vpanel-desc">Interactive in-video shopping flow</p>
+        </div>
+
+        <div className="vpanel-scroll">
+          <div className="vpanel-group">
+            <div className="vgroup-header">
+              <span className="vgroup-title">In-Story Commerce</span>
+              <span className="vgroup-count">7 steps</span>
+            </div>
+            <div className="vstep-list">
+              <button
+                className={`vstep-btn ${screen==='home'?'active':''}`}
+                onClick={() => go('home')}
+              >
+                <span className="vstep-num">01</span>
+                <div className="vstep-info">
+                  <span className="vstep-name">Home Feed</span>
+                  <span className="vstep-sub">Banner entry point</span>
+                </div>
+                {screen==='home' && <span className="vstep-dot" />}
+              </button>
+
+              <button
+                className={`vstep-btn ${screen==='discover'?'active':''}`}
+                onClick={() => go('discover')}
+              >
+                <span className="vstep-num">02</span>
+                <div className="vstep-info">
+                  <span className="vstep-name">Drama Hub</span>
+                  <span className="vstep-sub">Shorts, reels, trending</span>
+                </div>
+                {screen==='discover' && <span className="vstep-dot" />}
+              </button>
+
+              <button
+                className={`vstep-btn ${screen==='series'?'active':''}`}
+                onClick={() => go('series')}
+              >
+                <span className="vstep-num">03</span>
+                <div className="vstep-info">
+                  <span className="vstep-name">Series Overview</span>
+                  <span className="vstep-sub">Episodes & cast cards</span>
+                </div>
+                {screen==='series' && <span className="vstep-dot" />}
+              </button>
+
+              <button
+                className={`vstep-btn ${screen==='episode'?'active':''}`}
+                onClick={() => { setEpisodeScene(0); go('episode'); }}
+              >
+                <span className="vstep-num">04</span>
+                <div className="vstep-info">
+                  <span className="vstep-name">Ep 6 Player</span>
+                  <span className="vstep-sub">In-video product overlay</span>
+                </div>
+                {screen==='episode' && <span className="vstep-dot" />}
+              </button>
+
+              <button
+                className={`vstep-btn ${screen==='product'&&productKind==='trimmer'?'active':''}`}
+                onClick={() => { setProductKind('trimmer'); go('product'); }}
+              >
+                <span className="vstep-num">05</span>
+                <div className="vstep-info">
+                  <span className="vstep-name">Trimmer Buy</span>
+                  <span className="vstep-sub">Contextual one-tap buy</span>
+                </div>
+                {screen==='product'&&productKind==='trimmer' && <span className="vstep-dot" />}
+              </button>
+
+              <button
+                className={`vstep-btn ${screen==='confirmation'?'active':''}`}
+                onClick={() => { setProductKind('trimmer'); go('confirmation'); }}
+              >
+                <span className="vstep-num">06</span>
+                <div className="vstep-info">
+                  <span className="vstep-name">Order Placed</span>
+                  <span className="vstep-sub">Instant buy confirmation</span>
+                </div>
+                {screen==='confirmation' && <span className="vstep-dot" />}
+              </button>
+
+              <button
+                className={`vstep-btn ${screen==='nextEpisode'?'active':''}`}
+                onClick={() => go('nextEpisode')}
+              >
+                <span className="vstep-num">07</span>
+                <div className="vstep-info">
+                  <span className="vstep-name">Ep 7 Watch</span>
+                  <span className="vstep-sub">Continuous binge play</span>
+                </div>
+                {screen==='nextEpisode' && <span className="vstep-dot" />}
+              </button>
+            </div>
+          </div>
+
+          <div className="vpanel-group">
+            <div className="vgroup-header">
+              <span className="vgroup-title">Creator Merch</span>
+              <span className="vgroup-count">2 steps</span>
+            </div>
+            <div className="vstep-list">
+              <button
+                className={`vstep-btn ${screen==='categories'?'active':''}`}
+                onClick={() => go('categories')}
+              >
+                <span className="vstep-num">08</span>
+                <div className="vstep-info">
+                  <span className="vstep-name">Merch Store</span>
+                  <span className="vstep-sub">Apparel, mugs, hoodies</span>
+                </div>
+                {screen==='categories' && <span className="vstep-dot" />}
+              </button>
+
+              <button
+                className={`vstep-btn ${screen==='customize'?'active':''}`}
+                onClick={() => go('customize')}
+              >
+                <span className="vstep-num">09</span>
+                <div className="vstep-info">
+                  <span className="vstep-name">Live Customizer</span>
+                  <span className="vstep-sub">Interactive print preview</span>
+                </div>
+                {screen==='customize' && <span className="vstep-dot" />}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="vpanel-footer">
+          <button className="vpanel-reset-btn" onClick={resetFlow}>
+            ↺ Reset Flow
+          </button>
+          <a href="index.html" className="vpanel-hub-link">
+            ← Back to Feature Hub
+          </a>
+        </div>
+      </aside>
+
+      <main className="prototype-stage">
+        <div className="device-frame-wrap">
+          <div className="phone-shell">
+            {screen === "home" && <Home go={go} />}
+            {screen === "categories" && <Categories go={go} />}
+            {screen === "customize" && <Customizer go={go} />}
+            {screen === "discover" && <Discover go={go} />}
+            {screen === "series" && <Series go={go} />}
+            {screen === "episode" && <Episode go={go} scene={episodeScene} setScene={setEpisodeScene} />}
+            {screen === "product" && <Product go={go} kind={productKind} setKind={setProductKind} />}
+            {screen === "confirmation" && <Confirmation go={go} kind={productKind} />}
+            {screen === "nextEpisode" && <NextEpisode go={go} setKind={setProductKind} />}
+            <div className="home-indicator" />
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

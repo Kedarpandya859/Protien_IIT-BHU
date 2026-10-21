@@ -1,0 +1,10 @@
+{
+  "description": "Engage Tier-2 Indian men with short episodic micro-dramas that seamlessly integrate shoppable products, boosting discovery and repeat visits.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "description": "Simplifies onboarding for low-literacy users by collecting preferences to deliver a personalized, intuitive shopping experience tailored primarily for men.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

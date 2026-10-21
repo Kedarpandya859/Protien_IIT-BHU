@@ -1,0 +1,10 @@
+{
+  "description": "Enables users to compare up to 4 products side-by-side and get AI-powered, multilingual review summaries for confident, informed purchase decisions.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "description": "Aarav is a voice-first shopping assistant designed for male shoppers in India, streamlining the shopping experience through personalized recommendations and seamless cart management.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

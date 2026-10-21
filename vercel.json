@@ -1,0 +1,59 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "app": {
+      "root": ".",
+      "framework": "vite",
+      "bindings": [
+        {
+          "type": "service",
+          "service": "agentic",
+          "format": "url",
+          "env": "AGENTIC_SERVICE_URL"
+        },
+        {
+          "type": "service",
+          "service": "microdrama",
+          "format": "url",
+          "env": "MICRODRAMA_SERVICE_URL"
+        },
+        {
+          "type": "service",
+          "service": "personalisedonboarding",
+          "format": "url",
+          "env": "PERSONALISED_ONBOARDING_URL"
+        },
+        {
+          "type": "service",
+          "service": "summarizer_compare_bundling",
+          "format": "url",
+          "env": "SUMMARIZER_COMPARE_BUNDLING_URL"
+        }
+      ]
+    },
+    "agentic": {
+      "root": "agentic",
+      "framework": "vite"
+    },
+    "microdrama": {
+      "root": "microdrama",
+      "framework": "vite"
+    },
+    "personalisedonboarding": {
+      "root": "Personalised onboarding",
+      "framework": "vite"
+    },
+    "summarizer_compare_bundling": {
+      "root": "Summarizer_compare_bundling",
+      "framework": "vite"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": {
+        "service": "app"
+      }
+    }
+  ]
+}

@@ -5,7 +5,7 @@ This repository contains **3 self-contained, interactive prototype workflows** c
 
 ---
 
-## 🚀 Live Demo / Prototype Files
+## Live Demo / Prototype Files
 
 | File | Feature Name | Description & Flow |
 |---|---|---|
@@ -16,7 +16,7 @@ This repository contains **3 self-contained, interactive prototype workflows** c
 
 ---
 
-## 🌟 Key Features for Presenting to Judges
+## Key Features for Presenting to Judges
 
 ### 1. Zero-Glitch, Self-Contained Execution
 - **No Node.js or `npm install` needed** for judges to review.
@@ -32,7 +32,7 @@ Every prototype includes a sleek, sticky vertical panel on the left with:
 
 ---
 
-## 📋 Detailed Workflow Breakdowns
+## Detailed Workflow Breakdowns
 
 ### 1. `onboarding-to-shopping.html`
 - **Splash Screen:** Animated Meesho branding with quick start.
@@ -84,7 +84,7 @@ Every prototype includes a sleek, sticky vertical panel on the left with:
 
 ---
 
-## 🌐 How to Upload to GitHub & Host on GitHub Pages
+## How to Upload to GitHub & Host on GitHub Pages
 
 1. **Initialize and Push to GitHub:**
    ```bash

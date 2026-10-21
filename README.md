@@ -68,39 +68,34 @@ Every prototype includes a sleek, sticky vertical panel on the left with:
 ---
 
 ### 3. `agentic.html`
-- **12 Full Interactive Wireframes:** Laid out in an executive filmstrip with synchronized horizontal navigation:
-  1. *01 Meet Aarav* — Greeting and wake-word introduction.
-  2. *02 Listen to Request* — Audio waveform recording user speech in Hindi.
-  3. *03 Understand Intent* — Multi-intent semantic parsing.
-  4. *04 Search & Filter* — Automated price and rating filtering.
-  5. *05 Review Intelligence* — Autonomous evaluation of product ratings & specs.
-  6. *06 Decide the Best Buy* — Selection of best value bundle.
-  7. *07 Select Size & Colour* — Contextual preference matching.
-  8. *08 Act & Build Cart* — Automated cart assembly and coupon application.
-  9. *09 Review Checkout* — Automated check of address, delivery, and payment.
-  10. *10 Verify & Confirm* — Crucial safety guardrail: *"Aarav never pays without your YES"*.
-  11. *11 Order Placed* — Instant UPI execution on voice confirmation.
-  12. *12 Track with Aarav* — Continuous post-order assistant updates.
+- **12 Connected Stages in a Single Realistic Mobile Frame:** Shows one screen at a time with smooth transitions, working Back and Edit actions, audio waveforms, and interactive CTAs:
+  1. *01 Meet Aarav*: Greeting and wake-word introduction.
+  2. *02 Listen to Request*: Audio waveform recording user speech in Hindi.
+  3. *03 Understand Intent*: Multi-intent semantic parsing.
+  4. *04 Search & Filter*: Automated price and rating filtering.
+  5. *05 Review Intelligence*: Autonomous evaluation of product ratings and specs.
+  6. *06 Decide the Best Buy*: Selection of best value bundle.
+  7. *07 Select Size & Colour*: Contextual preference matching.
+  8. *08 Act & Build Cart*: Automated cart assembly and coupon application.
+  9. *09 Review Checkout*: Automated check of address, delivery, and payment.
+  10. *10 Verify & Confirm*: Crucial safety guardrail: *"Aarav never pays without your YES"*.
+  11. *11 Order Placed*: Instant UPI execution on voice confirmation.
+  12. *12 Track with Aarav*: Continuous post-order assistant updates.
 
 ---
 
-## How to Upload to GitHub & Host on GitHub Pages
+## How to Host on GitHub Pages
 
-1. **Initialize and Push to GitHub:**
+1. **Push to GitHub:**
    ```bash
-   git init
-   git add .
-   git commit -m "Add Meesho DICE presentation prototypes"
-   git branch -M main
-   git remote add origin https://github.com/<your-username>/<your-repo-name>.git
-   git push -u origin main
+   git push -u origin meesho-wireframes
    ```
 
 2. **Enable GitHub Pages:**
    - Go to your repository on GitHub.
    - Click **Settings** → **Pages**.
    - Under **Build and deployment** > **Source**, choose **Deploy from a branch**.
-   - Select branch **`main`** and folder **`/ (root)`**, then click **Save**.
-   - In 1–2 minutes, your live URL will be active at:
+   - Select branch **`meesho-wireframes`** and folder **`/ (root)`**, then click **Save**.
+   - In 1 to 2 minutes, your live URL will be active at:
      `https://<your-username>.github.io/<your-repo-name>/`
-   - Visiting the link will automatically open `index.html`, where judges can access all 3 prototypes.
+   - Visiting the link will automatically open `index.html`, where judges can test all 3 prototypes.

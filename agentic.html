@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Meesho: Aarav Agentic Shopping Assistant</title>
+<meta name="description" content="Meet Aarav, your AI shopping assistant. Voice-first, multilingual, agentic commerce from request to checkout to tracking." />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+:root {
+  --plum: #5b0f47;
+  --pink: #e8c9da;
+  --orange: #f8970a;
+  --cream: #fff0da;
+  --ink: #1b1535;
+  --grey: #6b6680;
+  --green: #ddf1e1;
+  --green-text: #1e6b3a;
+  --red: #f9d9d9;
+  --red-text: #9b1c1c;
+  --line: #e9e5e9;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-width: 375px;
+  background: radial-gradient(circle at 50% -10%, #fff 0, #f2eeec 46%);
+  color: var(--ink);
+  font-family: "Plus Jakarta Sans", Inter, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+#root {
+  min-height: 100vh;
+  width: 100%;
+}
+.prototype-wrapper {
+  display: flex;
+  min-height: 100vh;
+  background: #0d0b12;
+  color: #f0edf4;
+  position: relative;
+}
+
+/* Centered single mobile screen stage */
+.prototype-stage {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 32px 20px;
+  background: #f1eff3;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.device-frame-wrap {
+  width: 100%;
+  max-width: 410px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.stage-control-bar {
+  width: 100%;
+  max-width: 375px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.stage-step-pill {
+  font-size: 11px;
+  font-weight: 800;
+  color: #5b0f47;
+  background: #fff0da;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(248, 151, 10, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stage-step-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #4b4655;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+.stage-nav-group {
+  display: flex;
+  gap: 6px;
+}
+
+.stage-nav-btn {
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  background: white;
+  color: #5b0f47;
+  border: 1px solid #d8d1d5;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.stage-nav-btn:hover:not(:disabled) {
+  background: #5b0f47;
+  color: white;
+  border-color: #5b0f47;
+}
+
+.stage-nav-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.phone-shell-outer {
+  width: 375px;
+  height: 812px;
+  position: relative;
+  border-radius: 44px;
+  padding: 10px;
+  background: #191420;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  box-sizing: border-box;
+}
+
+.phone-frame {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  border-radius: 36px;
+  background: white;
+  color: var(--ink);
+}
+
+/* Screen transition effect */
+@keyframes screenSlideFade {
+  0% { opacity: 0.7; transform: scale(0.985); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.screen-transition {
+  animation: screenSlideFade 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.layer-group { position: absolute; inset: 0; }
+.meesho-base { z-index: 1; background: #faf9fa; }
+.meesho-base.dimmed::after {
+  content: "";
+  position: absolute;
+  inset: 28px 0 0;
+  z-index: 6;
+  background: rgba(27, 21, 53, .10);
+  pointer-events: none;
+}
+.aarav-overlay { z-index: 10; pointer-events: none; }
+.status-bar {
+  height: 28px;
+  padding: 6px 21px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 8;
+  background: white;
+  font-size: 11px;
+  font-weight: 800;
+}
+.status-symbols { display: flex; align-items: center; gap: 7px; font-size: 8px; }
+.battery { width: 18px; height: 9px; display: block; border: 1.5px solid var(--ink); border-radius: 3px; box-shadow: inset -3px 0 white; background: var(--ink); }
+.journey-progress {
+  height: 34px;
+  padding: 4px 18px 3px;
+  position: absolute;
+  top: 28px;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  background: rgba(255,255,255,.97);
+  border-bottom: 1px solid #efe8e4;
+}
+.journey-step {
+  width: 76px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  color: var(--grey);
+  font-size: 9px;
+  font-weight: 700;
+}
+.journey-step:not(:last-child)::after {
+  content: "";
+  width: 63px;
+  height: 2px;
+  position: absolute;
+  top: 5px;
+  left: 45px;
+  background: #eddfd4;
+}
+.journey-dot {
+  width: 10px;
+  height: 10px;
+  z-index: 1;
+  border: 2px solid var(--orange);
+  border-radius: 50%;
+  background: white;
+}
+.journey-step.is-current { color: var(--ink); }
+.journey-step.is-current .journey-dot { background: var(--orange); box-shadow: 0 0 0 3px rgba(248,151,10,.18); }
+.app-header, .simple-header {
+  height: 60px;
+  margin-top: 34px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 2;
+  background: white;
+  border-bottom: 1px solid var(--line);
+}
+.simple-header { font-size: 18px; font-weight: 700; }
+.header-back { width: 32px; height: 36px; flex: 0 0 32px; display: grid; place-items: center; border-radius: 8px; cursor: pointer; }
+.header-back:hover { background: var(--cream); color: var(--plum); }
+.m-mark { width: 36px; height: 36px; flex: 0 0 36px; display: grid; place-items: center; border-radius: 9px; background: var(--plum); color: white; font-size: 23px; font-weight: 800; }
+.search-box { height: 44px; flex: 1; min-width: 0; padding: 0 11px; display: flex; align-items: center; gap: 8px; border: 1px solid #cec8d0; border-radius: 9px; background: white; color: var(--grey); font-size: 14px; }
+.search-box span { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.ui-icon { width: 22px; height: 22px; flex: 0 0 22px; }
+.search-box .ui-icon { width: 19px; height: 19px; flex-basis: 19px; }
+.base-scroll { position: absolute; top: 122px; bottom: 68px; left: 0; right: 0; overflow: hidden; }
+.home-content, .results-content, .cart-content, .checkout-content { padding: 12px 16px 20px; }
+.delivery-line { height: 32px; display: flex; align-items: center; gap: 7px; font-size: 14px; }
+.delivery-line .ui-icon { width: 18px; height: 18px; color: var(--plum); }
+.delivery-line span { flex: 1; }
+.delivery-line b { color: var(--plum); font-size: 12px; }
+.promo-banner {
+  height: 118px;
+  margin: 8px 0 12px;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 12px;
+  background: linear-gradient(120deg, var(--plum), #8f3b73);
+  color: white;
+}
+.promo-banner div { display: flex; flex-direction: column; gap: 5px; }
+.promo-banner span { color: #ffc45f; font-size: 11px; font-weight: 800; letter-spacing: .08em; }
+.promo-banner b { max-width: 190px; font-size: 19px; line-height: 1.2; }
+.promo-banner small { font-size: 13px; }
+.promo-banner .shirt-icon { width: 82px; height: 82px; filter: brightness(1.5); }
+.shirt-icon { width: 60px; height: 60px; }
+.category-row { display: flex; gap: 8px; overflow: hidden; }
+.category-row span, .filter-row span { min-height: 36px; padding: 0 13px; display: grid; place-items: center; white-space: nowrap; border: 1px solid #d9d4db; border-radius: 18px; background: white; font-size: 14px; font-weight: 600; }
+.section-heading { margin: 16px 0 10px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+.section-heading b { font-size: 17px; }
+.section-heading span { color: var(--plum); font-weight: 700; }
+.home-grid, .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.product-tile { min-width: 0; position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: white; }
+.product-tile.highlighted { border: 2px solid var(--orange); }
+.product-image { height: 112px; display: grid; place-items: center; background: #e8e7ea; }
+.home-grid .product-image { height: 96px; }
+.product-name { padding: 8px 9px 2px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: #282236; font-size: 14px; font-weight: 600; }
+.product-price { padding: 0 9px; font-size: 16px; font-weight: 800; color: #1b1535; }
+.product-details { min-height: 32px; padding: 4px 9px 8px; display: flex; align-items: center; gap: 5px; color: #524d62; font-size: 12px; font-weight: 600; }
+.rating-pill { padding: 3px 5px; border-radius: 5px; background: var(--green-text); color: white; font-size: 11px; font-weight: 700; }
+.bottom-nav {
+  height: 68px;
+  padding: 7px 7px 12px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 4;
+  display: flex;
+  justify-content: space-around;
+  border-top: 1px solid var(--line);
+  background: white;
+}
+.nav-item { width: 67px; display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--grey); font-size: 9px; cursor: pointer; }
+.nav-item .ui-icon { width: 22px; height: 22px; }
+.nav-item.active { color: var(--plum); font-weight: 700; }
+.filter-row { display: flex; gap: 7px; }
+.filter-row span { min-height: 38px; padding: 0 11px; font-size: 12px; }
+.filter-row.second { margin-top: 7px; }
+.results-count { margin: 11px 0 8px; font-size: 14px; font-weight: 700; }
+.results-grid .product-name { color: var(--ink); font-weight: 600; }
+.aarav-dock {
+  position: absolute;
+  right: 14px;
+  bottom: 78px;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.aarav-label { padding: 5px 9px; border-radius: 13px; background: var(--ink); color: white; font-size: 11px; font-weight: 700; box-shadow: 0 4px 12px rgba(27,21,53,.18); }
+.avatar-ring { width: 62px; height: 62px; padding: 3px; position: relative; border-radius: 50%; background: var(--orange); box-shadow: 0 7px 20px rgba(91,15,71,.25); }
+.avatar-ring > svg { width: 56px; height: 56px; display: block; border-radius: 50%; }
+.avatar-mic { width: 22px; height: 22px; position: absolute; right: -1px; bottom: -1px; display: grid; place-items: center; border: 2px solid white; border-radius: 50%; background: var(--orange); color: white; }
+.avatar-mic .ui-icon { width: 12px; height: 12px; }
+.frosted-sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 68px;
+  z-index: 30;
+  border-top: 1px solid rgba(255,255,255,.8);
+  border-radius: 20px 20px 0 0;
+  background: rgba(255,255,255,.85);
+  box-shadow: 0 -12px 32px rgba(27,21,53,.13);
+  backdrop-filter: blur(16px);
+  pointer-events: auto;
+}
+.sheet-handle { width: 44px; height: 4px; margin: 8px auto 7px; border-radius: 4px; background: var(--plum); }
+.listen-sheet { height: 334px; padding: 0 16px 12px; }
+.listening-title { text-align: center; color: var(--plum); font-size: 14px; font-weight: 800; cursor: pointer; }
+.waveform { height: 32px; margin: 4px 0 5px; display: flex; align-items: center; justify-content: center; gap: 4px; }
+.waveform span { width: 3px; max-height: 32px; min-height: 5px; border-radius: 3px; background: linear-gradient(var(--orange), var(--plum)); }
+.transcript { padding: 10px 12px; border: 1.5px solid var(--orange); border-radius: 12px; background: white; font-size: 14px; line-height: 1.35; }
+.transcript span { width: fit-content; margin-top: 5px; padding: 3px 7px; display: block; border-radius: 10px; background: var(--green); color: var(--green-text); font-size: 11px; font-weight: 700; }
+.reply-line { margin: 7px 0; color: var(--plum); font-size: 14px; font-weight: 700; }
+.tone-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.tone-row > div { min-height: 44px; display: grid; place-items: center; border: 1px solid #d8d1d7; border-radius: 22px; background: white; font-size: 14px; font-weight: 600; cursor: pointer; }
+.tone-row .selected { border-color: var(--plum); background: var(--plum); color: white; }
+.listen-action { margin-top: 9px; }
+.applied-tag { height: 20px; padding: 0 6px; position: absolute; z-index: 23; display: flex; align-items: center; gap: 3px; border-radius: 10px; background: var(--orange); color: var(--ink); font-size: 8px; font-weight: 800; box-shadow: 0 2px 5px rgba(40,20,30,.18); }
+.applied-tag .ui-icon { width: 10px; height: 10px; flex-basis: 10px; fill: currentColor; stroke-width: 1; }
+.tag-budget { top: 178px; left: 90px; }
+.tag-men { top: 178px; left: 253px; }
+.tag-dryfit { top: 223px; left: 18px; }
+.tag-rating { top: 223px; left: 119px; }
+.pick-badge { padding: 5px 7px; position: absolute; top: 306px; left: 24px; z-index: 24; border-radius: 6px; background: var(--orange); color: var(--ink); font-size: 10px; font-weight: 800; }
+.review-sheet { height: 294px; padding: 0 16px 8px; }
+.review-title { margin-bottom: 6px; font-size: 14px; font-weight: 800; }
+.review-chip { min-height: 31px; margin-top: 5px; padding: 6px 9px; border-radius: 8px; font-size: 14px; line-height: 1.35; }
+.review-chip b { margin-right: 4px; font-size: 11px; }
+.review-chip.good { background: var(--green); color: var(--green-text); }
+.review-chip.note { background: var(--red); color: var(--red-text); }
+.funnel-line { margin: 7px 0; color: var(--grey); font-size: 14px; font-weight: 700; text-align: center; }
+.sheet-action { min-height: 44px; display: grid; place-items: center; border-radius: 10px; background: var(--orange); color: var(--ink); font-size: 14px; font-weight: 800; cursor: pointer; pointer-events: auto; }
+.sheet-link { min-height: 30px; display: grid; place-items: center; color: var(--plum); font-size: 14px; font-weight: 800; cursor: pointer; pointer-events: auto; }
+.cart-content { bottom: 76px; }
+.address-strip { min-height: 60px; padding: 9px 10px; display: flex; align-items: center; gap: 9px; border-radius: 10px; background: #f4edf2; font-size: 12px; }
+.address-strip .ui-icon { color: var(--plum); }
+.address-strip div { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.address-strip b { font-size: 14px; }
+.address-strip strong { color: var(--plum); }
+.cart-item { min-height: 138px; padding: 14px 0; display: flex; align-items: flex-start; gap: 10px; border-bottom: 1px solid var(--line); }
+.cart-thumb { width: 84px; height: 106px; flex: 0 0 84px; display: grid; place-items: center; border-radius: 9px; background: #e8e7ea; }
+.cart-item-copy { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; font-size: 12px; }
+.cart-item-copy b { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 14px; }
+.cart-item-copy span { color: var(--grey); font-size: 14px; }
+.cart-item-copy strong { font-size: 15px; }
+.qty-stepper { height: 34px; display: flex; align-items: center; overflow: hidden; border: 1px solid var(--plum); border-radius: 7px; color: var(--plum); }
+.qty-stepper > div { width: 27px; text-align: center; font-size: 12px; cursor: pointer; pointer-events: auto; }
+.qty-stepper b { width: 27px; text-align: center; font-size: 12px; }
+.coupon-base { min-height: 62px; margin-top: 10px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; border: 1px dashed var(--green-text); border-radius: 10px; background: var(--green); color: var(--green-text); }
+.coupon-base div { display: flex; flex-direction: column; gap: 4px; }
+.coupon-base b, .coupon-base span, .coupon-base strong { font-size: 14px; }
+.price-summary { margin-top: 12px; padding: 13px; display: flex; flex-direction: column; gap: 10px; border: 1px solid var(--line); border-radius: 12px; background: white; font-size: 14px; }
+.price-summary > div { display: flex; justify-content: space-between; }
+.price-summary > div:last-child { padding-top: 10px; border-top: 1px solid var(--line); }
+.saving { color: var(--green-text); font-weight: 700; }
+.sticky-bar, .checkout-sticky { height: 76px; padding: 10px 16px 16px; position: absolute; left: 0; right: 0; bottom: 0; z-index: 5; display: flex; align-items: center; gap: 12px; border-top: 1px solid var(--line); background: white; }
+.sticky-bar > div:first-child { width: 94px; display: flex; flex-direction: column; font-size: 11px; }
+.sticky-bar b { font-size: 18px; }
+.base-cta { min-height: 48px; flex: 1; display: grid; place-items: center; border-radius: 10px; background: var(--plum); color: white; font-size: 14px; font-weight: 800; cursor: pointer; pointer-events: auto; }
+.locked-cta { background: var(--grey); opacity: .62; }
+.voice-bubble { max-width: 286px; padding: 11px 13px; position: absolute; top: 145px; right: 16px; z-index: 24; border: 1.5px solid var(--orange); border-radius: 12px 12px 4px 12px; background: white; font-size: 14px; box-shadow: 0 5px 14px rgba(27,21,53,.11); }
+.tag-cart-one { top: 273px; left: 30px; }
+.tag-size { top: 320px; left: 113px; }
+.tag-cart-two { top: 411px; left: 30px; }
+.tag-coupon { top: 532px; right: 27px; }
+.action-toast { min-height: 44px; padding: 0 15px; position: absolute; left: 24px; bottom: 91px; z-index: 25; display: flex; align-items: center; gap: 8px; border-radius: 22px; background: var(--ink); color: white; font-size: 14px; font-weight: 700; box-shadow: 0 8px 22px rgba(27,21,53,.24); }
+.action-toast .ui-icon { width: 18px; height: 18px; color: #83d49b; }
+.checkout-content { bottom: 76px; display: flex; flex-direction: column; gap: 10px; }
+.checkout-card, .delivery-card { padding: 13px; border: 1px solid var(--line); border-radius: 12px; background: white; font-size: 14px; }
+.address-card { display: flex; flex-direction: column; gap: 5px; }
+.address-card div { display: flex; justify-content: space-between; }
+.address-card strong { color: var(--plum); font-size: 14px; }
+.address-card span { color: var(--grey); }
+.delivery-card { display: flex; align-items: center; gap: 9px; background: var(--green); }
+.delivery-card .ui-icon { color: var(--green-text); }
+.delivery-card div { display: flex; flex-direction: column; gap: 4px; }
+.delivery-card span { color: var(--green-text); font-size: 14px; }
+.checkout-prices { display: flex; flex-direction: column; gap: 9px; }
+.checkout-prices div { display: flex; justify-content: space-between; }
+.checkout-prices .order-total { padding-top: 10px; border-top: 1px solid var(--line); }
+.payment-card { display: flex; flex-direction: column; gap: 10px; }
+.payment-card > div { display: flex; align-items: center; gap: 9px; cursor: pointer; pointer-events: auto; }
+.radio { width: 18px; height: 18px; border: 1.5px solid var(--grey); border-radius: 50%; }
+.radio.checked { border: 5px solid var(--plum); }
+.checkout-sticky { justify-content: stretch; }
+.verify-sheet { height: 294px; padding: 0 12px 7px; }
+.verify-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 9px; }
+.verify-grid > div { min-height: 38px; display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; line-height: 1.25; }
+.check-circle { width: 18px; height: 18px; flex: 0 0 18px; display: grid; place-items: center; border-radius: 50%; background: var(--green); color: var(--green-text); }
+.check-circle .ui-icon { width: 13px; height: 13px; }
+.confirm-panel { margin-top: 7px; padding: 10px; border-radius: 12px; background: var(--plum); color: white; text-align: center; }
+.confirm-panel > b { font-size: 17px; }
+.voice-confirm { margin: 5px 0 8px; display: flex; align-items: center; justify-content: center; gap: 5px; color: var(--cream); font-size: 14px; }
+.voice-confirm .ui-icon { width: 15px; height: 15px; }
+.confirm-buttons { display: grid; grid-template-columns: 1.2fr 1fr; gap: 8px; }
+.confirm-buttons > div { min-height: 44px; display: grid; place-items: center; border-radius: 9px; font-size: 14px; font-weight: 800; cursor: pointer; pointer-events: auto; }
+.confirm-buttons > div:first-child { background: var(--orange); color: var(--ink); }
+.confirm-buttons > div:last-child { border: 1.5px solid white; }
+.safety-caption { margin-top: 5px; color: var(--grey); text-align: center; font-size: 14px; }
+[role="button"] { cursor: pointer; user-select: none; pointer-events: auto; transition: transform .16s ease; }
+[role="button"]:active { transform: scale(.98); }
+[role="button"]:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+.waveform.is-live span:nth-child(2n) { animation: voice-pulse .65s ease-in-out infinite alternate; }
+@keyframes voice-pulse { to { transform: scaleY(.45); } }
+.removed-item { min-height: 44px; margin: 8px 0; display: grid; place-items: center; border: 1px dashed var(--plum); border-radius: 10px; color: var(--plum); font-size: 13px; font-weight: 700; cursor: pointer; pointer-events: auto; }
+.remove-link { color: var(--plum); font-size: 14px; font-weight: 700; cursor: pointer; pointer-events: auto; }
+.welcome-sheet { height: 318px; padding: 0 16px 12px; }
+.welcome-copy { display: flex; flex-direction: column; gap: 5px; }
+.welcome-copy .eyebrow { color: var(--orange); font-size: 10px; font-weight: 800; letter-spacing: .08em; }
+.welcome-copy > b { color: var(--plum); font-size: 24px; }
+.welcome-copy p { margin: 0; color: var(--grey); font-size: 13px; line-height: 1.45; }
+.promise-row { margin: 12px 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.promise-row span { min-height: 58px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border-radius: 10px; background: var(--cream); font-size: 10px; font-weight: 700; text-align: center; }
+.promise-row .ui-icon { width: 18px; height: 18px; color: var(--plum); }
+.intent-sheet { height: 294px; padding: 0 16px 10px; }
+.intent-summary { margin: 8px 0 10px; display: flex; flex-wrap: wrap; gap: 7px; }
+.intent-summary span { padding: 7px 10px; border: 1px solid #e1d9df; border-radius: 18px; background: white; color: var(--plum); font-size: 12px; font-weight: 700; }
+.assumption-note, .fit-note, .recommend-line { min-height: 54px; margin-bottom: 10px; padding: 9px 10px; display: flex; align-items: center; gap: 8px; border-radius: 10px; background: var(--cream); font-size: 12px; line-height: 1.35; }
+.assumption-note .ui-icon, .fit-note .ui-icon, .recommend-line .ui-icon { width: 18px; height: 18px; color: var(--orange); }
+.assumption-note span, .fit-note span, .recommend-line span { display: flex; flex-direction: column; }
+.search-sheet { height: 318px; padding: 0 16px 12px; }
+.searching-head { padding: 3px 0 10px; display: flex; align-items: center; gap: 10px; }
+.searching-head > div:first-child { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; background: var(--cream); color: var(--plum); }
+.searching-head > span { display: flex; flex-direction: column; gap: 3px; }
+.searching-head small { color: var(--grey); font-size: 11px; }
+.agent-pulse { animation: agent-pulse 1s ease-in-out infinite alternate; }
+@keyframes agent-pulse { to { box-shadow: 0 0 0 8px rgba(248,151,10,.18); } }
+.task-list { display: grid; gap: 6px; }
+.task-list > div { min-height: 32px; padding: 0 9px; display: flex; align-items: center; gap: 8px; border-radius: 8px; background: #f3f0f2; color: var(--grey); font-size: 12px; }
+.task-list > div > span { width: 18px; height: 18px; display: grid; place-items: center; border-radius: 50%; background: #ddd7dc; }
+.task-list .done { background: var(--green); color: var(--green-text); font-weight: 700; }
+.task-list .ui-icon { width: 12px; height: 12px; }
+.search-actions { margin-top: 9px; display: grid; grid-template-columns: .7fr 1.3fr; gap: 8px; }
+.pause-action { margin-top: 0; min-height: 36px; display: grid; place-items: center; border: 1px solid var(--plum); border-radius: 9px; color: var(--plum); font-size: 12px; font-weight: 800; cursor: pointer; pointer-events: auto; }
+.search-actions .sheet-action { min-height: 36px; font-size: 12px; }
+.decision-sheet { height: 294px; padding: 0 16px 11px; }
+.choice-row { margin: 8px 0 9px; display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.choice-row > div { min-height: 74px; padding: 9px; display: flex; flex-direction: column; gap: 3px; border: 1px solid #ddd5dc; border-radius: 10px; background: white; cursor: pointer; pointer-events: auto; }
+.choice-row > div.selected { border: 2px solid var(--orange); background: var(--cream); }
+.choice-row strong { font-size: 17px; }
+.choice-row span { color: var(--grey); font-size: 11px; }
+.product-page { padding: 14px 16px 90px; display: flex; flex-direction: column; gap: 12px; }
+.product-hero { height: 280px; position: relative; display: grid; place-items: center; border-radius: 14px; background: #e8e7ea; }
+.product-hero .shirt-icon { width: 170px; height: 170px; }
+.product-hero > span { padding: 5px 8px; position: absolute; left: 10px; bottom: 10px; border-radius: 7px; background: white; color: var(--green-text); font-size: 12px; font-weight: 800; }
+.product-page > b { font-size: 18px; }
+.hero-price { font-size: 22px; font-weight: 800; }
+.hero-price span { margin-left: 8px; color: var(--green-text); font-size: 12px; }
+.detail-line { display: flex; gap: 7px; }
+.detail-line span { padding: 6px 8px; border-radius: 7px; background: var(--green); color: var(--green-text); font-size: 11px; font-weight: 700; }
+.colour-row { display: flex; align-items: center; gap: 9px; }
+.colour-row b { margin-right: 4px; font-size: 13px; }
+.swatch { width: 25px; height: 25px; border: 3px solid white; border-radius: 50%; box-shadow: 0 0 0 1px #c9c1c8; }
+.swatch.black { background: #1d1d22; }
+.swatch.navy { background: #27344f; }
+.size-sheet { height: 260px; padding: 0 16px 12px; }
+.size-options { margin: 9px 0 12px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.size-options > div { min-height: 42px; display: grid; place-items: center; border: 1px solid #d6cfd5; border-radius: 9px; background: white; font-size: 13px; font-weight: 800; cursor: pointer; pointer-events: auto; }
+.size-options > div.selected { border-color: var(--plum); background: var(--plum); color: white; }
+.tag-address { top: 179px; right: 24px; }
+.tag-delivery { top: 274px; right: 23px; }
+.tag-payment { top: 585px; left: 28px; }
+.checkout-toast { min-height: 128px; padding: 12px; position: absolute; left: 16px; right: 16px; bottom: 88px; z-index: 28; border: 1px solid rgba(255,255,255,.9); border-radius: 15px; background: rgba(255,255,255,.92); box-shadow: 0 10px 28px rgba(27,21,53,.18); backdrop-filter: blur(12px); pointer-events: auto; }
+.checkout-toast > div:first-child { display: flex; align-items: center; gap: 9px; }
+.checkout-toast .ui-icon { color: var(--orange); }
+.checkout-toast span { display: flex; flex-direction: column; gap: 3px; font-size: 11px; }
+.checkout-toast > div:last-child { min-height: 42px; margin-top: 10px; display: grid; place-items: center; border-radius: 9px; background: var(--plum); color: white; font-size: 13px; font-weight: 800; cursor: pointer; pointer-events: auto; }
+.order-content, .tracking-content { padding: 28px 16px 24px; display: flex; flex-direction: column; align-items: center; }
+.success-mark { width: 68px; height: 68px; display: grid; place-items: center; border-radius: 50%; background: var(--green); color: var(--green-text); }
+.success-mark .ui-icon { width: 34px; height: 34px; }
+.order-title { margin-top: 14px; font-size: 20px; }
+.order-number { margin-top: 5px; color: var(--grey); font-size: 12px; }
+.order-products, .delivery-address { width: 100%; margin-top: 22px; padding: 12px; display: flex; align-items: center; gap: 12px; border: 1px solid var(--line); border-radius: 12px; background: white; }
+.order-products > div { width: 78px; height: 82px; display: grid; place-items: center; border-radius: 9px; background: #e8e7ea; }
+.order-products > span, .delivery-address > span { display: flex; flex-direction: column; gap: 5px; color: var(--grey); font-size: 11px; line-height: 1.4; }
+.order-products b, .delivery-address b { color: var(--ink); font-size: 13px; }
+.delivery-address { margin-top: 10px; }
+.delivery-address .ui-icon { color: var(--plum); }
+.order-toast { min-height: 68px; padding: 11px 14px; position: absolute; left: 18px; right: 18px; bottom: 86px; z-index: 28; display: flex; align-items: center; gap: 10px; border-radius: 14px; background: var(--ink); color: white; box-shadow: 0 9px 24px rgba(27,21,53,.24); cursor: pointer; pointer-events: auto; }
+.order-toast > span:last-child { display: flex; flex-direction: column; gap: 4px; font-size: 11px; }
+.order-toast b { font-size: 13px; }
+.tracking-content { align-items: stretch; }
+.tracking-hero { width: 100%; padding: 18px; display: flex; flex-direction: column; gap: 5px; border-radius: 14px; background: linear-gradient(125deg, var(--plum), #8f3b73); color: white; }
+.tracking-hero span { color: var(--cream); font-size: 12px; }
+.tracking-hero b { font-size: 21px; }
+.tracking-hero small { font-size: 11px; }
+.tracking-line { margin: 20px 8px; display: grid; gap: 0; }
+.tracking-line > div { min-height: 65px; padding-left: 30px; position: relative; display: flex; flex-direction: column; gap: 4px; color: var(--grey); font-size: 12px; }
+.tracking-line > div::before { content: ""; width: 2px; position: absolute; left: 7px; top: 16px; bottom: -2px; background: #ddd6dc; }
+.tracking-line > div:last-child::before { display: none; }
+.tracking-line > div > span { width: 16px; height: 16px; position: absolute; left: 0; top: 0; border: 3px solid #d6cdd4; border-radius: 50%; background: white; }
+.tracking-line > div.active > span { border-color: var(--orange); background: var(--orange); }
+.tracking-line > div.active { color: var(--ink); }
+.tracking-line small { font-size: 10px; }
+.help-card { padding: 13px; display: flex; flex-direction: column; gap: 5px; border: 1px solid var(--line); border-radius: 12px; background: white; font-size: 12px; }
+.help-card span { color: var(--grey); font-size: 11px; }
+.tracking-sheet { height: 256px; padding: 0 16px 12px; }
+.tracking-sheet p { margin: 9px 0 14px; padding: 11px; border-radius: 10px; background: var(--cream); color: var(--plum); font-size: 13px; font-weight: 700; }
+.tracking-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.tracking-actions > div { min-height: 42px; display: grid; place-items: center; border: 1px solid #d7cfd5; border-radius: 9px; font-size: 12px; font-weight: 700; cursor: pointer; pointer-events: auto; }
+.tracking-actions > div.selected { border-color: var(--plum); background: var(--plum); color: white; }
+.restart-link { min-height: 30px; margin-top: 3px; display: grid; place-items: center; color: var(--plum); font-size: 11px; font-weight: 800; cursor: pointer; pointer-events: auto; }
+.home-indicator { width: 126px; height: 5px; position: absolute; left: calc(50% - 63px); bottom: 5px; z-index: 50; border-radius: 4px; background: var(--ink); }
+/* ─── VERTICAL PRESENTATION PANEL & STAGE ─── */
+.vertical-nav-panel {
+  width: 290px;
+  min-width: 290px;
+  max-width: 290px;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  left: 0;
+  background: #14111a;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
+}
+
+.vpanel-header {
+  padding: 18px 16px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: #100d16;
+  flex-shrink: 0;
+}
+
+.vpanel-badge-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.vpanel-pill {
+  background: #f8970a;
+  color: #1b1535;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+}
+
+.vpanel-source {
+  font-size: 10px;
+  font-weight: 800;
+  color: #ffca7b;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.vpanel-title {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.35;
+}
+
+.vpanel-desc {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: #9c97a8;
+  line-height: 1.3;
+}
+
+/* Scrollable Step Groups */
+.vpanel-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 8px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+.vpanel-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+.vpanel-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+
+.vpanel-group {
+  margin-bottom: 14px;
+}
+
+.vgroup-header {
+  padding: 6px 8px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vgroup-title {
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: #ffca7b;
+}
+
+.vgroup-count {
+  font-size: 10px;
+  color: #8d8898;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.vstep-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.vstep-btn {
+  width: 100%;
+  padding: 7px 9px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: #d1cbd8;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-sizing: border-box;
+}
+
+.vstep-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  transform: translateX(2px);
+}
+
+.vstep-btn.active {
+  background: linear-gradient(135deg, #f8970a, #ffb347);
+  border-color: #ffd285;
+  color: #1b1535;
+  font-weight: 800;
+  box-shadow: 0 4px 14px rgba(248, 151, 10, 0.45);
+}
+
+.vstep-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #b7b0c2;
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  font-weight: 800;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.vstep-btn.active .vstep-num {
+  background: rgba(27, 21, 53, 0.2);
+  color: #1b1535;
+}
+
+.vstep-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.vstep-name {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: inherit;
+  line-height: 1.25;
+}
+
+.vstep-sub {
+  font-size: 9.5px;
+  color: #8e889a;
+  line-height: 1.2;
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vstep-btn.active .vstep-sub {
+  color: #4a2806;
+}
+
+.vstep-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #1b1535;
+  box-shadow: 0 0 6px #1b1535;
+  flex-shrink: 0;
+}
+
+/* Panel Footer */
+.vpanel-footer {
+  padding: 12px 14px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: #100d16;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.vpanel-reset-btn {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 7px;
+  background: rgba(248, 151, 10, 0.1);
+  color: #ffca7b;
+  border: 1px solid rgba(248, 151, 10, 0.3);
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.vpanel-reset-btn:hover {
+  background: #f8970a;
+  color: #1b1535;
+  border-color: #f8970a;
+}
+
+.vpanel-hub-link {
+  font-size: 11px;
+  color: #9c97a8;
+  text-align: center;
+  text-decoration: none;
+  padding: 4px;
+  transition: color 0.15s;
+}
+
+.vpanel-hub-link:hover {
+  color: #ffffff;
+}
+
+/* Mobile drawer toggle */
+.panel-mobile-toggle {
+  display: none;
+}
+
+.panel-backdrop {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  .panel-mobile-toggle {
+    display: flex;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 1000;
+    background: #18141c;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+    padding: 7px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    cursor: pointer;
+  }
+  .vertical-nav-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    z-index: 1001;
+    width: 280px;
+  }
+  .vertical-nav-panel.open {
+    transform: translateX(0);
+  }
+  .panel-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 1000;
+    backdrop-filter: blur(2px);
+  }
+  .prototype-stage {
+    padding: 56px 14px 30px;
+  }
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useCallback, useContext, createContext } = React;
+
+const journeySteps = ["Listen", "Think", "Act", "Confirm"];
+const frameCount = 12;
+const PrototypeContext = createContext({ goTo: (_i) => {} });
+const FrameContext = createContext(0);
+
+function useNav() {
+  const { goTo } = useContext(PrototypeContext);
+  const fi = useContext(FrameContext);
+  return { goTo, next: () => goTo(fi + 1), back: () => goTo(fi - 1) };
+}
+
+function Tap({ className = "", onClick, children, label }) {
+  const kd = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } };
+  return <div className={className} role="button" tabIndex={0} aria-label={label} onClick={onClick} onKeyDown={kd}>{children}</div>;
+}
+
+function Icon({ name }) {
+  const paths = {
+    search: <><circle cx="10.5" cy="10.5" r="6.5" /><path d="m15.5 15.5 4 4" /></>,
+    mic: <><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M6 11a6 6 0 0 0 12 0M12 17v4M9 21h6" /></>,
+    back: <path d="m14.5 5-7 7 7 7" />,
+    sparkle: <path d="m12 2 1.5 6.5L20 10l-6.5 1.5L12 18l-1.5-6.5L4 10l6.5-1.5L12 2Zm7 14 .6 2.4L22 19l-2.4.6L19 22l-.6-2.4L16 19l2.4-.6L19 16Z" />,
+    check: <path d="m5 12.5 4.2 4.2L19 7" />,
+    home: <><path d="m3 11 9-8 9 8" /><path d="M5.5 9.5V21h13V9.5M9.5 21v-7h5v7" /></>,
+    grid: <><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></>,
+    bag: <><path d="M5 8h14l1 13H4L5 8Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></>,
+    cart: <><path d="M3 4h2l2 11h10l3-8H6" /><circle cx="9" cy="19" r="1.5" /><circle cx="17" cy="19" r="1.5" /></>,
+    user: <><circle cx="12" cy="8" r="4" /><path d="M4.5 21a7.5 7.5 0 0 1 15 0" /></>,
+    pin: <><path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z" /><circle cx="12" cy="10" r="2.5" /></>,
+  };
+  return <svg className={`ui-icon icon-${name}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{paths[name]}</svg>;
+}
+
+function ShirtIcon() {
+  return <svg className="shirt-icon" viewBox="0 0 64 64" fill="none"><path d="M23 12c2 5 16 5 18 0l13 8-7 11-6-3v25H23V28l-6 3-7-11 13-8Z" fill="#B4B0BA" stroke="#817C8E" strokeWidth="2.4" strokeLinejoin="round" /><path d="M26 14c1.5 6 10.5 6 12 0" stroke="#817C8E" strokeWidth="2.4" strokeLinecap="round" /></svg>;
+}
+
+function StatusBar() { return <div className="status-bar"><span>9:41</span><div className="status-symbols"><span>●●●</span><span>⌁</span><span className="battery" /></div></div>; }
+
+function JourneyProgress({ active }) {
+  return <div className="journey-progress">{journeySteps.map((s,i) => <div className={`journey-step ${i===active?"is-current":""}`} key={s}><span className="journey-dot" /><span>{s}</span></div>)}</div>;
+}
+
+function AaravAvatar() {
+  return <div className="aarav-dock"><span className="aarav-label">Aarav</span><div className="avatar-ring"><svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="28" fill="#E8C9DA" /><path d="M10 55c1-12 8-18 18-18s17 6 18 18" fill="#5B0F47" /><ellipse cx="28" cy="25" rx="12" ry="13.5" fill="#C9845A" /><path d="M16.5 24c-.5-10 5-15 12-15 8 0 12.5 6 11 15-3-1.5-5-4.5-5.5-6.5-4 4-10 6-17.5 6.5Z" fill="#1B1535" /><circle cx="24" cy="26" r="1.2" fill="#1B1535" /><circle cx="32" cy="26" r="1.2" fill="#1B1535" /><path d="M24 31c2.5 2 5.5 2 8 0" stroke="#7B402D" strokeWidth="1.5" strokeLinecap="round" /></svg><span className="avatar-mic"><Icon name="mic" /></span></div></div>;
+}
+
+function AppHeader({ query, back = false, cartTitle }) {
+  const { back: goBack } = useNav();
+  const backEl = <Tap className="header-back" onClick={goBack} label="Back"><Icon name="back" /></Tap>;
+  if (cartTitle) return <div className="simple-header">{backEl}<b>{cartTitle}</b></div>;
+  return <div className="app-header">{back ? backEl : <div className="m-mark">m</div>}<div className="search-box"><Icon name="search" /><span>{query ?? "Search for products"}</span><Icon name="mic" /></div></div>;
+}
+
+const navItems = [{ label:"Home", icon:"home" },{ label:"Categories", icon:"grid" },{ label:"Orders", icon:"bag" },{ label:"Cart", icon:"cart" },{ label:"Account", icon:"user" }];
+function BottomNav({ active = "Home" }) {
+  const { goTo } = useNav();
+  const dests = { Home:0, Categories:3, Orders:10, Cart:7, Account:0 };
+  return <div className="bottom-nav">{navItems.map(item => <Tap className={`nav-item ${item.label===active?"active":""}`} onClick={() => goTo(dests[item.label])} label={`Open ${item.label}`} key={item.label}><Icon name={item.icon} /><span>{item.label}</span></Tap>)}</div>;
+}
+
+function ProductTile({ name, price, rating, highlighted = false, delivery = false }) {
+  return <div className={`product-tile ${highlighted?"highlighted":""}`}><div className="product-image"><ShirtIcon /></div><div className="product-name">{name}</div><div className="product-price">{price}</div><div className="product-details">{rating && <span className="rating-pill">{rating} ★</span>}{delivery && <span>Free delivery</span>}</div></div>;
+}
+
+function BaseLayer({ children, dimmed = false }) { return <div className={`layer-group meesho-base ${dimmed?"dimmed":""}`}>{children}</div>; }
+function OverlayLayer({ active, children }) { return <div className="layer-group aarav-overlay"><JourneyProgress active={active} />{children}<AaravAvatar /></div>; }
+
+function Frame({ index, name, active, current, base, overlay, dimmed = false }) {
+  return <FrameContext.Provider value={index}><section className={`frame-wrap ${current?"is-active":""}`} aria-label={name} data-frame-index={index}><div className="frame-name"><span>{name}</span>{current && <small>Current screen</small>}</div><div className="phone-frame" data-frame-name={name}><BaseLayer dimmed={dimmed}>{base}</BaseLayer><OverlayLayer active={active}>{overlay}</OverlayLayer><div className="home-indicator" /></div></section></FrameContext.Provider>;
+}
+
+function AppliedTag({ children, className = "" }) { return <span className={`applied-tag ${className}`}><Icon name="sparkle" />{children}</span>; }
+
+function HomeBase({ showBack = false }) {
+  return <><StatusBar /><AppHeader back={showBack} /><div className="base-scroll home-content"><div className="delivery-line"><Icon name="pin" /><span>Delivering to 110001</span><b>Change</b></div><div className="promo-banner"><div><span>SPORTS EDIT</span><b>Move more. Spend less.</b><small>Starting ₹199</small></div><ShirtIcon /></div><div className="category-row">{["Men","Women","Electronics","Sports","Home"].map(i => <span key={i}>{i}</span>)}</div><div className="section-heading"><b>Top picks for you</b><span>View all</span></div><div className="home-grid"><ProductTile name="Everyday Tee" price="₹199" /><ProductTile name="Active Crew Tee" price="₹249" /><ProductTile name="Sports T-shirt" price="₹299" /><ProductTile name="Training Tee" price="₹349" /></div></div><BottomNav /></>;
+}
+
+function WelcomeOverlay() {
+  const { next } = useNav();
+  return <div className="frosted-sheet welcome-sheet"><div className="sheet-handle" /><div className="welcome-copy"><span className="eyebrow">YOUR DIGITAL SHOPKEEPER</span><b>Meet Aarav</b><p>Bas bolo kya chahiye. Main dhoondhunga, compare karunga aur aapki permission ke baad hi order karunga.</p></div><div className="promise-row"><span><Icon name="search" />Finds</span><span><Icon name="sparkle" />Decides</span><span><Icon name="cart" />Prepares</span><span><Icon name="check" />You approve</span></div><Tap className="sheet-action" onClick={next}>Start shopping with Aarav</Tap></div>;
+}
+
+function ListeningOverlay() {
+  const [listening, setListening] = useState(true);
+  const [tone, setTone] = useState("Bhaiya");
+  const { next } = useNav();
+  const bars = [12,22,34,18,38,48,28,54,40,50,29,42,31,20,28,14];
+  return <div className="frosted-sheet listen-sheet"><div className="sheet-handle" /><div className="listening-title" onClick={() => setListening(!listening)}>{listening ? "Bolo, main sun raha hoon" : "Paused · tap to continue"}</div><div className={`waveform ${listening?"is-live":""}`}>{bars.map((h,i) => <span key={i} style={{height:h}} />)}</div><div className="transcript">Gym ke liye ₹700 ke andar 2 dry-fit T-shirts chahiye.<span>Samajh gaya</span></div><div className="reply-line">Bolo, main dhoondh leta hoon.</div><div className="tone-row">{["Buddy","Bhaiya","Uncle"].map(t => <div className={tone===t?"selected":""} onClick={() => setTone(t)} key={t}>{t}</div>)}</div><Tap className="sheet-action listen-action" onClick={next}>Done speaking</Tap></div>;
+}
+
+function IntentOverlay() {
+  const { next, back } = useNav();
+  return <div className="frosted-sheet intent-sheet"><div className="sheet-handle" /><div className="review-title">Maine yeh samjha</div><div className="intent-summary"><span>2 T-shirts</span><span>Dry-fit</span><span>For gym</span><span>Total ≤ ₹700</span></div><div className="assumption-note"><Icon name="sparkle" /><span><b>No assumptions made</b>Colour aur size aapse poochunga.</span></div><Tap className="sheet-action" onClick={next}>Haan, sahi samjhe</Tap><Tap className="sheet-link" onClick={back}>Request edit karo</Tap></div>;
+}
+
+function ResultsBase() {
+  return <><StatusBar /><AppHeader back query="dry-fit t-shirts men" /><div className="base-scroll results-content"><div className="filter-row"><span>Sort</span><span>Filter</span><span>Under ₹700</span><span>Men</span></div><div className="filter-row second"><span>Dry-Fit</span><span>4 star and above</span></div><div className="results-count">24 results</div><div className="results-grid"><ProductTile name="AeroFlex Dry-Fit Tee" price="₹374" rating="4.5" highlighted delivery /><ProductTile name="FlexGo Training Tee" price="₹399" rating="4.1" delivery /><ProductTile name="StrideFit Sports Tee" price="₹429" rating="4.2" delivery /><ProductTile name="Motion Crew T-shirt" price="₹449" rating="4.0" delivery /></div></div><BottomNav active="Categories" /></>;
+}
+
+function SearchOverlay() {
+  const [running, setRunning] = useState(true);
+  const { next } = useNav();
+  const tasks = ["Request understood","1,248 products searched","Budget + fabric filtered","24 strong matches found"];
+  return <div className="frosted-sheet search-sheet"><div className="sheet-handle" /><div className="searching-head"><div className={running?"agent-pulse":""}><Icon name="sparkle" /></div><span><b>{running ? "Aarav is working" : "Search paused"}</b><small>{running ? "Checking value, ratings and returns…" : "Resume whenever you are ready"}</small></span></div><div className="task-list">{tasks.map((t,i) => <div className={running||i<2?"done":""} key={t}><span><Icon name="check" /></span>{t}</div>)}</div><div className="search-actions"><Tap className="pause-action" onClick={() => setRunning(!running)}>{running ? "Pause" : "Resume"}</Tap><Tap className="sheet-action" onClick={next}>See 24 matches</Tap></div></div>;
+}
+
+function ThinkingOverlay() {
+  const { next, back } = useNav();
+  return <><AppliedTag className="tag-budget">Applied by Aarav</AppliedTag><AppliedTag className="tag-men">Applied by Aarav</AppliedTag><AppliedTag className="tag-dryfit">Applied by Aarav</AppliedTag><AppliedTag className="tag-rating">Applied by Aarav</AppliedTag><span className="pick-badge">Aarav's pick</span><div className="frosted-sheet review-sheet"><div className="sheet-handle" /><div className="review-title">Aarav ne 2,430 reviews padhe</div><div className="review-chip good"><b>PRO</b> Sweat-wicking, true to size</div><div className="review-chip good"><b>PRO</b> 4.5 star verified durability</div><div className="review-chip note"><b>NOTE</b> Sleeves run 0.5 inch fitted</div><div className="funnel-line">1,248 options &gt; 24 fit &gt; 2 best picks</div><Tap className="sheet-action" onClick={next}>Haan, yehi chahiye</Tap><Tap className="sheet-link" onClick={back}>Aur dikhao</Tap></div></>;
+}
+
+function DecisionOverlay() {
+  const [choice, setChoice] = useState("AeroFlex");
+  const { next, back } = useNav();
+  return <><span className="pick-badge">Aarav's pick</span><div className="frosted-sheet decision-sheet"><div className="sheet-handle" /><div className="review-title">Best value, clearly explained</div><div className="choice-row"><div className={choice==="AeroFlex"?"selected":""} onClick={() => setChoice("AeroFlex")}><b>AeroFlex</b><strong>₹374</strong><span>4.5 ★ · lighter</span></div><div className={choice==="FlexGo"?"selected":""} onClick={() => setChoice("FlexGo")}><b>FlexGo</b><strong>₹399</strong><span>4.1 ★ · thicker</span></div></div><div className="recommend-line"><Icon name="sparkle" /><span><b>{choice} recommended</b>Better review confidence and still inside your total budget.</span></div><Tap className="sheet-action" onClick={next}>Choose {choice}</Tap><Tap className="sheet-link" onClick={back}>← Aur matches dekho</Tap></div></>;
+}
+
+function ProductBase() {
+  return <><StatusBar /><AppHeader back cartTitle="AeroFlex Dry-Fit Tee" /><div className="base-scroll product-page"><div className="product-hero"><ShirtIcon /><span>4.5 ★ · 1,480 ratings</span></div><b>AeroFlex Dry-Fit Training Tee</b><div className="hero-price">₹374 <span>Free delivery</span></div><div className="detail-line"><span>Quick-dry fabric</span><span>7-day return</span></div><div className="colour-row"><b>Colour</b><span className="swatch black" /><span className="swatch navy" /></div></div><BottomNav active="Categories" /></>;
+}
+
+function SizeOverlay() {
+  const [size, setSize] = useState("L");
+  const { next, back } = useNav();
+  return <div className="frosted-sheet size-sheet"><div className="sheet-handle" /><div className="review-title">Fit check by Aarav</div><div className="fit-note"><Icon name="sparkle" /><span>Reviews say shoulders run snug. <b>L is safer for workouts.</b></span></div><div className="size-options">{["M","L","XL"].map(s => <div className={size===s?"selected":""} onClick={() => setSize(s)} key={s}>{s}</div>)}</div><Tap className="sheet-action" onClick={next}>{`Add Black / ${size} to cart`}</Tap><div className="safety-caption">Size and colour stay editable in cart</div><Tap className="sheet-link" onClick={back}>← Change product</Tap></div>;
+}
+
+function QtyStepper() {
+  const [q, setQ] = useState(1);
+  return <div className="qty-stepper"><div onClick={() => setQ(Math.max(1,q-1))}>−</div><b>{q}</b><div onClick={() => setQ(q+1)}>+</div></div>;
+}
+
+function CartItem({ color }) {
+  const [removed, setRemoved] = useState(false);
+  if (removed) return <div className="removed-item" onClick={() => setRemoved(false)}>Item removed · Undo</div>;
+  return <div className="cart-item"><div className="cart-thumb"><ShirtIcon /></div><div className="cart-item-copy"><b>AeroFlex Dry-Fit Tee</b><span>{color}, L</span><strong>₹374</strong><span className="remove-link" onClick={() => setRemoved(true)}>Remove</span></div><QtyStepper /></div>;
+}
+
+function CartBase() {
+  const { next } = useNav();
+  return <><StatusBar /><AppHeader cartTitle="Cart (2)" /><div className="base-scroll cart-content"><div className="address-strip"><Icon name="pin" /><div><b>Deliver to Aarav</b><span>New Delhi, 110001</span></div><strong>Change</strong></div><CartItem color="Jet Black" /><CartItem color="Navy" /><div className="coupon-base"><div><b>FIRSTBUY50 applied, -₹50</b><span>You saved ₹50</span></div><strong>Applied</strong></div><div className="price-summary"><b>Price details</b><div><span>Items</span><span>₹748</span></div><div><span>Coupon</span><span className="saving">-₹50</span></div><div><strong>Total</strong><strong>₹698</strong></div></div></div><div className="sticky-bar"><div><span>Total</span><b>₹698</b></div><Tap className="base-cta" onClick={next}>Continue</Tap></div></>;
+}
+
+function ActOverlay() {
+  const { next } = useNav();
+  return <><div className="voice-bubble">Black wala L mein cart mein daal do.</div><AppliedTag className="tag-cart-one">Added by Aarav</AppliedTag><AppliedTag className="tag-size">Size L selected by Aarav</AppliedTag><AppliedTag className="tag-cart-two">Added by Aarav</AppliedTag><AppliedTag className="tag-coupon">Applied by Aarav</AppliedTag><Tap className="action-toast" onClick={next}><Icon name="check" /><span>Pack of 2 added, coupon lag gaya · Tap to continue →</span></Tap></>;
+}
+
+function CheckoutBase({ locked = false }) {
+  const [payment, setPayment] = useState("UPI");
+  const { next } = useNav();
+  return <><StatusBar /><AppHeader cartTitle="Checkout" /><div className="base-scroll checkout-content"><div className="checkout-card address-card"><div><b>Delivery address</b><strong>Change</strong></div><span>Aarav Kumar</span><span>New Delhi, 110001</span></div><div className="delivery-card"><Icon name="check" /><div><b>Delivery in 3 days, Free</b><span>Both items in one package</span></div></div><div className="checkout-card checkout-prices"><b>Price details</b><div><span>Items</span><span>₹748</span></div><div><span>Coupon</span><span className="saving">-₹50</span></div><div><span>Delivery</span><span className="saving">Free</span></div><div className="order-total"><strong>Order total</strong><strong>₹698</strong></div></div><div className="checkout-card payment-card"><b>Payment options</b>{["UPI","Cash on delivery","Card"].map(p => <div onClick={() => setPayment(p)} key={p}><span className={`radio ${payment===p?"checked":""}`} /><span>{p}{p==="UPI"?" selected":""}</span></div>)}</div></div><div className="checkout-sticky">{locked ? <div className="base-cta locked-cta">Approval required</div> : <Tap className="base-cta" onClick={next}>Place Order ₹698</Tap>}</div></>;
+}
+
+function CheckoutReviewOverlay() {
+  const { next } = useNav();
+  return <><AppliedTag className="tag-address">Address checked</AppliedTag><AppliedTag className="tag-delivery">Free delivery found</AppliedTag><AppliedTag className="tag-payment">UPI ready · not charged</AppliedTag><div className="checkout-toast"><div><Icon name="sparkle" /><span><b>Everything is ready</b>Address, coupon, delivery and payment checked.</span></div><div onClick={next}>Continue to approval · ₹698</div></div></>;
+}
+
+function VerifyOverlay() {
+  const [decision, setDecision] = useState("none");
+  const { next, back } = useNav();
+  const checks = ["Size L, Jet Black + Navy","Delivery 3 days, free","7-day easy return","Coupon FIRSTBUY50 applied"];
+  return <div className="frosted-sheet verify-sheet"><div className="sheet-handle" /><div className="verify-grid">{checks.map(c => <div key={c}><span className="check-circle"><Icon name="check" /></span>{c}</div>)}</div><div className="confirm-panel"><b>₹698. Place order?</b><span className="voice-confirm"><Icon name="mic" />Bol ke confirm karo</span><div className="confirm-buttons"><div onClick={() => { setDecision("yes"); next(); }}>YES (haan)</div><div onClick={() => { setDecision("later"); back(); }}>NOT YET</div></div></div><div className="safety-caption">{decision==="yes" ? "Yes received · placing demo order" : decision==="later" ? "Order paused · nothing charged" : "Aarav never pays without your yes"}</div></div>;
+}
+
+function OrderBase() {
+  return <><StatusBar /><AppHeader cartTitle="Order confirmed" /><div className="base-scroll order-content"><div className="success-mark"><Icon name="check" /></div><b className="order-title">Your gym set is ordered</b><span className="order-number">Order #MS1042 · ₹698 paid via UPI</span><div className="order-products"><div><ShirtIcon /></div><span><b>2 AeroFlex tees</b>Black and Navy · Size L<br/>Arriving together</span></div><div className="delivery-address"><Icon name="pin" /><span><b>Delivering to Aarav Kumar</b>New Delhi, 110001</span></div></div><BottomNav active="Orders" /></>;
+}
+
+function OrderPlacedOverlay() {
+  const { next } = useNav();
+  return <div className="order-toast" onClick={next}><span className="check-circle"><Icon name="check" /></span><span><b>YES received. Order placed.</b>Tap to track it with Aarav →</span></div>;
+}
+
+function TrackingBase() {
+  const stages = ["Order placed","Packed","Shipped","Delivered"];
+  return <><StatusBar /><AppHeader cartTitle="Track order" /><div className="base-scroll tracking-content"><div className="tracking-hero"><span>Arriving Tuesday</span><b>06 Oct, by 8 PM</b><small>Both items in one package</small></div><div className="tracking-line">{stages.map((s,i) => <div className={i<2?"active":""} key={s}><span /><b>{s}</b><small>{i===0?"9:42 AM":i===1?"In progress":"Upcoming"}</small></div>)}</div><div className="help-card"><b>Need help with this order?</b><span>Return eligible for 7 days after delivery.</span></div></div><BottomNav active="Orders" /></>;
+}
+
+function TrackingOverlay() {
+  const [action, setAction] = useState("Track");
+  const { goTo } = useNav();
+  return <div className="frosted-sheet tracking-sheet"><div className="sheet-handle" /><div className="review-title">Aarav is still on it</div><p>"Package pack ho raha hai. Ship hote hi bata dunga."</p><div className="tracking-actions">{["Track","Support","Return"].map(a => <div className={action===a?"selected":""} onClick={() => setAction(a)} key={a}>{a}</div>)}</div><div className="safety-caption">{action} selected · you stay in control</div><div className="restart-link" onClick={() => goTo(0)}>Restart prototype</div></div>;
+}
+
+function App() {
+  const [currentFrame, setCurrentFrame] = useState(0);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const frames = [
+    { name: "01 Meet Aarav", desc: "Welcome & mic prompt", active: 0, base: <HomeBase showBack={false} />, overlay: <WelcomeOverlay />, dimmed: true },
+    { name: "02 Listen to Request", desc: "Natural voice input", active: 0, base: <HomeBase showBack={true} />, overlay: <ListeningOverlay />, dimmed: true },
+    { name: "03 Understand Intent", desc: "NLP entity extraction", active: 0, base: <HomeBase showBack={true} />, overlay: <IntentOverlay />, dimmed: true },
+    { name: "04 Search and Filter", desc: "Automated catalogue query", active: 1, base: <ResultsBase />, overlay: <SearchOverlay />, dimmed: true },
+    { name: "05 Review Intelligence", desc: "AI quality score analysis", active: 1, base: <ResultsBase />, overlay: <ThinkingOverlay />, dimmed: true },
+    { name: "06 Decide the Best Buy", desc: "Top match recommendations", active: 1, base: <ResultsBase />, overlay: <DecisionOverlay />, dimmed: true },
+    { name: "07 Select Size and Colour", desc: "Preference resolution", active: 2, base: <ProductBase />, overlay: <SizeOverlay />, dimmed: true },
+    { name: "08 Act and Build Cart", desc: "Autonomous cart curation", active: 2, base: <CartBase />, overlay: <ActOverlay />, dimmed: false },
+    { name: "09 Review Checkout", desc: "Full breakdown display", active: 2, base: <CheckoutBase />, overlay: <CheckoutReviewOverlay />, dimmed: false },
+    { name: "10 Verify and Confirm", desc: "Voice confirmation check", active: 3, base: <CheckoutBase locked />, overlay: <VerifyOverlay />, dimmed: true },
+    { name: "11 Order Placed", desc: "Instant booking confirmed", active: 3, base: <OrderBase />, overlay: <OrderPlacedOverlay />, dimmed: false },
+    { name: "12 Track with Aarav", desc: "Real-time dispatch updates", active: 3, base: <TrackingBase />, overlay: <TrackingOverlay />, dimmed: true },
+  ];
+
+  const goTo = useCallback((ri) => {
+    const i = Math.min(Math.max(ri, 0), frames.length - 1);
+    setCurrentFrame(i);
+    setMobileOpen(false);
+  }, [frames.length]);
+
+  const current = frames[currentFrame];
+
+  return (
+    <div className="prototype-wrapper">
+      <button
+        className="panel-mobile-toggle"
+        onClick={() => setMobileOpen(!mobileOpen)}
+        aria-label="Toggle navigation panel"
+      >
+        <span>{mobileOpen ? "✕ Close Steps" : "☰ Flow Steps"}</span>
+      </button>
+
+      {mobileOpen && (
+        <div className="panel-backdrop" onClick={() => setMobileOpen(false)} />
+      )}
+
+      <aside className={`vertical-nav-panel ${mobileOpen ? "open" : ""}`}>
+        <div className="vpanel-header">
+          <div className="vpanel-badge-row">
+            <span className="vpanel-pill">FEATURE 3</span>
+            <span className="vpanel-source">Meesho DICE</span>
+          </div>
+          <h1 className="vpanel-title">Aarav: Agentic Shopping</h1>
+          <p className="vpanel-desc">12-stage voice commerce workflow</p>
+        </div>
+
+        <div className="vpanel-scroll">
+          <div className="vpanel-group">
+            <div className="vgroup-header">
+              <span className="vgroup-title">Agent Journey</span>
+              <span className="vgroup-count">12 steps</span>
+            </div>
+            <div className="vstep-list">
+              {frames.map((f, i) => (
+                <button
+                  key={f.name}
+                  className={`vstep-btn ${currentFrame === i ? "active" : ""}`}
+                  onClick={() => goTo(i)}
+                >
+                  <span className="vstep-num">{String(i + 1).padStart(2, "0")}</span>
+                  <div className="vstep-info">
+                    <span className="vstep-name">{f.name.replace(/^\d+\s*/, '')}</span>
+                    <span className="vstep-sub">{f.desc}</span>
+                  </div>
+                  {currentFrame === i && <span className="vstep-dot" />}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="vpanel-footer">
+          <button className="vpanel-reset-btn" onClick={() => goTo(0)}>
+            ↺ Reset Flow
+          </button>
+          <a href="index.html" className="vpanel-hub-link">
+            ← Back to Feature Hub
+          </a>
+        </div>
+      </aside>
+
+      <main className="prototype-stage">
+        <div className="device-frame-wrap">
+          <div className="stage-control-bar">
+            <div className="stage-step-pill">
+              <span>STEP {String(currentFrame + 1).padStart(2, "0")} / 12</span>
+              <span className="stage-step-title">{current.name.replace(/^\d+\s*/, '')}</span>
+            </div>
+            <div className="stage-nav-group">
+              <button
+                className="stage-nav-btn"
+                onClick={() => goTo(currentFrame - 1)}
+                disabled={currentFrame === 0}
+                aria-label="Previous step"
+              >
+                ← Prev
+              </button>
+              <button
+                className="stage-nav-btn"
+                onClick={() => goTo(currentFrame + 1)}
+                disabled={currentFrame === frames.length - 1}
+                aria-label="Next step"
+              >
+                Next →
+              </button>
+            </div>
+          </div>
+
+          <div className="phone-shell-outer">
+            <div className="phone-frame screen-transition" key={currentFrame}>
+              <PrototypeContext.Provider value={{ goTo }}>
+                <FrameContext.Provider value={currentFrame}>
+                  <BaseLayer dimmed={current.dimmed}>{current.base}</BaseLayer>
+                  <OverlayLayer active={current.active}>{current.overlay}</OverlayLayer>
+                  <div className="home-indicator" />
+                </FrameContext.Provider>
+              </PrototypeContext.Provider>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

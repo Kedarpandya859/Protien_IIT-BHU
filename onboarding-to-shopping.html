@@ -1072,7 +1072,7 @@ const PRODUCTS = [
   { id:7, name:'Wipro Garnet LED Study Lamp',         short:'Wipro Garnet',     price:699, mrp:1499, rating:4.4, reviews:3568,  img:'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=400&h=400&fit=crop&auto=format', verifiedPlus:true },
 ]
 
-const SPECS> = {
+const SPECS = {
   1: { price:'₹399', mrp:'₹999', discount:'60% OFF', rating:'4.1 ★', reviews:'12,843', warranty:'3 Months', returns:'7 Days', replacement:'7 Days', sellerRating:'4.3 ★', delivery:'Free', material:'Cotton twill', fit:'Regular', closure:'Adjustable strap', brim:'Curved', ventilation:'6 eyelets', washable:'Hand wash', uv:'UPF 30', weight:'82g', comfort:'4.1 ★', fitRating:'4.0 ★', breathability:'3.9 ★', style:'4.2 ★', colorQuality:'4.0 ★', durability:'4.0 ★', complaintRate:'11%', posReviews:'76%', complaint:'Runs slightly small', bestFor:'Daily wear' },
   2: { price:'₹299', mrp:'₹899', discount:'67% OFF', rating:'4.0 ★', reviews:'8,421', warranty:'3 Months', returns:'7 Days', replacement:'7 Days', sellerRating:'4.2 ★', delivery:'Free', material:'Cotton blend', fit:'Relaxed', closure:'Metal buckle', brim:'Curved', ventilation:'6 eyelets', washable:'Hand wash', uv:'UPF 25', weight:'78g', comfort:'4.2 ★', fitRating:'4.1 ★', breathability:'4.0 ★', style:'4.0 ★', colorQuality:'3.9 ★', durability:'3.9 ★', complaintRate:'12%', posReviews:'74%', complaint:'Colour fades', bestFor:'Budget buyers' },
   3: { price:'₹599', mrp:'₹1,299', discount:'54% OFF', rating:'4.2 ★', reviews:'6,732', warranty:'6 Months', returns:'7 Days', replacement:'7 Days', sellerRating:'4.4 ★', delivery:'Free', material:'Polyester', fit:'Sport', closure:'Hook & loop', brim:'Curved', ventilation:'Mesh panels', washable:'Machine wash', uv:'UPF 40', weight:'68g', comfort:'4.4 ★', fitRating:'4.3 ★', breathability:'4.5 ★', style:'4.2 ★', colorQuality:'4.3 ★', durability:'4.2 ★', complaintRate:'8%', posReviews:'82%', complaint:'Logo feels stiff', bestFor:'Sports & travel' },
@@ -1862,7 +1862,7 @@ const THEMES = [
 function AIReviewScreen({ onBack, onNavigate, onOpenTheme }) {
   const [lang, setLang] = useState('en')
   const [showLangSheet, setShowLangSheet] = useState(false)
-  const [expanded, setExpanded] = useState<Record<string,boolean>>({ pros:true, cons:true, complaints:false, praised:false })
+  const [expanded, setExpanded] = useState({ pros:true, cons:true, complaints:false, praised:false })
   const [isSpeaking, setIsSpeaking] = useState(false)
 
   const isHi = lang === 'hi'

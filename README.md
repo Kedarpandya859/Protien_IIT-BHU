@@ -1,5 +1,4 @@
 # Meesho Innovation Strategy: Interactive Prototype Showcase
-> **Meesho DICE • Product & Growth Strategy**
 
 This repository contains **3 self-contained, interactive prototype workflows** created for the Meesho case competition presentation. Each prototype ties together detailed Figma wireframes into a seamless, glitch-free user flow that judges can test live on any device or browser with zero setup.
 

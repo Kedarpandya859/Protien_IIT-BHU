@@ -1,4 +1,5 @@
 # Meesho Innovation Strategy: Interactive Prototype Showcase
+> **Meesho DICE • Product & Growth Strategy**
 
 This repository contains **3 self-contained, interactive prototype workflows** created for the Meesho case competition presentation. Each prototype ties together detailed Figma wireframes into a seamless, glitch-free user flow that judges can test live on any device or browser with zero setup.
 
@@ -98,3 +99,19 @@ Every prototype includes a sleek, sticky vertical panel on the left with:
    - In 1 to 2 minutes, your live URL will be active at:
      `https://<your-username>.github.io/<your-repo-name>/`
    - Visiting the link will automatically open `index.html`, where judges can test all 3 prototypes.
+
+---
+
+## How to Deploy on Vercel (Microservices Architecture)
+
+This project includes [`vercel.json`](vercel.json) preconfigured for **Vercel Services** multi-service deployment:
+- **`app`** (root `.`): Primary entrypoint serving the prototype hub and workflows.
+- **Internal Services**: `agentic`, `microdrama`, `personalisedonboarding`, and `summarizer_compare_bundling` built independently with service bindings.
+
+To deploy on Vercel:
+1. Import repository [`Kedarpandya859/Protien_IIT-BHU`](https://github.com/Kedarpandya859/Protien_IIT-BHU) into your Vercel Dashboard.
+2. Vercel automatically detects `vercel.json` and builds all defined services in parallel.
+3. Or deploy via CLI:
+   ```bash
+   vercel
+   ```

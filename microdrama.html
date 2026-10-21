@@ -258,7 +258,7 @@ button { font: inherit; }
 .avatar-circle { min-width: 35px; height: 35px; border-radius: 50%; display: grid; place-items: center; color: var(--brand); background: var(--brand-soft); font-size: 10px; font-weight: 700; }
 .seller { padding: 15px 16px; display: grid; grid-template-columns: 1fr auto; gap: 4px; background: var(--canvas); font-size: 10px; }
 .seller strong { font-size: 12px; }
-.commerce-bar { position: fixed; z-index: 20; bottom: 0; width: 100%; max-width: 430px; height: 72px; padding: 10px 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 9px; background: white; border-top: 1px solid var(--line); }
+.commerce-bar { position: absolute; z-index: 25; bottom: 0; left: 0; right: 0; width: 100%; box-sizing: border-box; height: 72px; padding: 10px 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 9px; background: white; border-top: 1px solid var(--line); }
 .confirmation { min-height: 100vh; padding-bottom: 30px; background: var(--canvas); }
 .success-panel { padding: 23px 16px 21px; display: flex; flex-direction: column; align-items: center; background: white; text-align: center; }
 .success-icon { width: 74px; height: 74px; margin-bottom: 12px; border-radius: 50%; display: grid; place-items: center; color: white; background: var(--green); box-shadow: 0 0 0 10px #e7f7ed; }
@@ -338,7 +338,7 @@ button { font: inherit; }
 .custom-summary span { color: var(--muted); font-size: 9px; }
 .custom-summary strong { font-size: 19px; }
 .custom-summary small { color: var(--green); font-size: 8px; }
-.added-toast { position: fixed; z-index: 25; bottom: 78px; left: 50%; transform: translateX(-50%); width: min(390px, calc(100% - 30px)); padding: 11px 14px; border-radius: 9px; display: flex; align-items: center; gap: 8px; color: white; background: #2d292c; font-size: 10px; font-weight: 700; }
+.added-toast { position: absolute; z-index: 30; bottom: 82px; left: 16px; right: 16px; width: auto; box-sizing: border-box; padding: 11px 14px; border-radius: 9px; display: flex; align-items: center; gap: 8px; color: white; background: #2d292c; font-size: 10px; font-weight: 700; }
 .custom-commerce .button { padding: 0 10px; font-size: 10px; }
 .custom-success { min-height: 100vh; background: var(--canvas); }
 .custom-success-body { padding: 32px 16px; display: flex; flex-direction: column; align-items: center; text-align: center; }
@@ -1003,7 +1003,8 @@ function Customizer({ go }) {
   }
 
   return (
-    <main className="screen-content customizer-page">
+    <>
+      <main className="screen-content customizer-page">
       <AppHeader title="Customize Your Product" onBack={() => go("categories")} actions={<Icon name="cart" />} />
       <div className="custom-step"><span>1</span> Choose product <i /><span>2</span> Add design <i /><span>3</span> Order</div>
       <section className="merch-selector">
@@ -1048,15 +1049,16 @@ function Customizer({ go }) {
         <div className="print-promise"><Icon name="shield" size={25} /><div><strong>Meesho Print Promise</strong><span>Preview checked before printing • Easy help for print issues</span></div></div>
         <section className="custom-summary">
           <div><span>Custom {merch}</span><strong>{prices[merch]}</strong><small>Free Delivery • Made to order</small></div>
-          <span>Delivery in 6–8 days</span>
+          <span>Delivery in 6 to 8 days</span>
         </section>
       </section>
       {added && <div className="added-toast"><Icon name="check" size={17} /> Personalized item added to cart</div>}
-      <div className="commerce-bar custom-commerce">
-        <Btn variant="outline" onClick={() => setAdded(true)}><Icon name="cart" size={18} /> Add to Cart</Btn>
-        <Btn onClick={() => setOrdered(true)}>Buy Now • {prices[merch]}</Btn>
-      </div>
     </main>
+    <div className="commerce-bar custom-commerce">
+      <Btn variant="outline" onClick={() => setAdded(true)}><Icon name="cart" size={18} /> Add to Cart</Btn>
+      <Btn onClick={() => setOrdered(true)}>Buy Now • {prices[merch]}</Btn>
+    </div>
+  </>
   );
 }
 
